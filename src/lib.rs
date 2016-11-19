@@ -7,13 +7,18 @@
 //! extern crate alloc_cortex_m;
 //! extern crate collections;
 //!
-//! use alloc_cortex_m::init as alloc_init;
+//! use alloc_cortex_m;
 //! use collections::Vec;
+//!
+//! pub unsafe extern "C" fn reset_vector() {
+//!     let heap_start: *mut usize = &mut _heap_start;
+//!     let heap_end: *mut usize = &mut _heap_end;
+//! }
 //!
 //! #[no_mangle]
 //! pub fn main() -> ! {
 //!     // Initialize the heap BEFORE you use the allocator
-//!     unsafe { alloc_init(0x2000_0000, 1024) }
+//!     unsafe { alloc_cortex_m::init(heap_start, heap_end) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
