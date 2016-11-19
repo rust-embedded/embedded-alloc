@@ -3,27 +3,38 @@
 //! # Example
 //!
 //! ```
-//! // Plug in the allocator
+//! // Plug in the allocator crate
 //! extern crate alloc_cortex_m;
 //! extern crate collections;
 //!
-//! use alloc_cortex_m;
 //! use collections::Vec;
 //!
-//! pub unsafe extern "C" fn reset_vector() {
-//!     let heap_start: *mut usize = &mut _heap_start;
-//!     let heap_end: *mut usize = &mut _heap_end;
+//! // These symbols come from a linker script
+//! extern "C" {
+//!     static mut _heap_start: usize;
+//!     static mut _heap_end: usize;
 //! }
 //!
 //! #[no_mangle]
 //! pub fn main() -> ! {
 //!     // Initialize the heap BEFORE you use the allocator
-//!     unsafe { alloc_cortex_m::init(heap_start, heap_end) }
+//!     unsafe { alloc_cortex_m::init(&mut _heap_start, &mut _heap_end) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
 //!     // ...
 //! }
+//! ```
+//!
+//! And in your linker script, you might have something like:
+//!
+//! ``` text
+//! /* space reserved for the stack */
+//! _stack_size = 0x1000;
+//!
+//! /* `.` is right after the .bss and .data sections */
+//! _heap_start = .;
+//! _heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
 //! ```
 
 #![allocator]
@@ -34,7 +45,7 @@
 extern crate cortex_m;
 extern crate linked_list_allocator;
 
-use core::{ptr, cmp};
+use core::{cmp, ptr};
 
 use linked_list_allocator::Heap;
 use cortex_m::interrupt::Mutex;
@@ -43,26 +54,32 @@ use cortex_m::interrupt::Mutex;
 ///
 /// You must initialize this heap using the
 /// [`init`](struct.Heap.html#method.init) method before using the allocator.
-pub static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
+static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
 
 /// Initializes the heap
 ///
-/// This method must be called before you run any code that makes use of the
+/// This function must be called BEFORE you run any code that makes use of the
 /// allocator.
 ///
-/// This method must be called exactly ONCE.
+/// `start_addr` is the address where the heap will be located.
 ///
-/// `start_addr` is the address where the heap will be located. Note that
-/// heap grows "upwards", towards larger addresses.
+/// `end_addr` points to the end of the heap.
 ///
-/// `end_addr` is the address just part the end of the heap.
+/// Note that:
 ///
-/// In your linker script, you might have something like:
+/// - The heap grows "upwards", towards larger addresses. Thus `end_addr` must
+///   be larger than `start_addr`
 ///
-/// ```
-///    _heap_start = .;
-///    _heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
-/// ```
+/// - The size of the heap will actually be
+///   `(end_addr as usize) - (start_addr as usize) + 1` because the allocator
+///   won't use the byte at `end_addr`.
+///
+/// # Unsafety
+///
+/// Obey these or Bad Stuff will happen.
+///
+/// - This function must be called exactly ONCE.
+/// - `end_addr` > `start_addr`
 pub unsafe fn init(start_addr: *mut usize, end_addr: *mut usize) {
     let start = start_addr as usize;
     let end = end_addr as usize;
@@ -76,7 +93,9 @@ pub unsafe fn init(start_addr: *mut usize, end_addr: *mut usize) {
 #[no_mangle]
 /// Rust allocation function (c.f. malloc)
 pub extern "C" fn __rust_allocate(size: usize, align: usize) -> *mut u8 {
-    HEAP.lock(|heap| heap.allocate_first_fit(size, align).expect("out of memory"))
+    HEAP.lock(|heap| {
+        heap.allocate_first_fit(size, align).expect("out of memory")
+    })
 }
 
 /// Rust de-allocation function (c.f. free)
