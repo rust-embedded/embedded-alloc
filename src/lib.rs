@@ -7,13 +7,13 @@
 //! extern crate alloc_cortex_m;
 //! extern crate collections;
 //!
-//! use alloc_cortex_m::HEAP;
+//! use alloc_cortex_m::init as alloc_init;
 //! use collections::Vec;
 //!
 //! #[no_mangle]
 //! pub fn main() -> ! {
 //!     // Initialize the heap BEFORE you use the allocator
-//!     unsafe { HEAP.init(0x2000_0000, 1024) }
+//!     unsafe { alloc_init(0x2000_0000, 1024) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
@@ -64,6 +64,14 @@ impl Heap {
     pub unsafe fn init(&mut self, heap_bottom: usize, heap_size: usize) {
         self.inner.init(heap_bottom, heap_size);
     }
+}
+
+/// Init function
+pub unsafe fn alloc_init(start_addr: *mut usize, end_addr: *mut usize) {
+    let start = start_addr as usize;
+    let end = end_addr as usize;
+    let size = (end - start) - 1;
+    HEAP.lock(|heap| heap.init(start, size));
 }
 
 // Rust allocator interface
