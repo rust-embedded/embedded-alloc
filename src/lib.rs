@@ -3,22 +3,38 @@
 //! # Example
 //!
 //! ```
-//! // Plug in the allocator
+//! // Plug in the allocator crate
 //! extern crate alloc_cortex_m;
 //! extern crate collections;
 //!
-//! use alloc_cortex_m::HEAP;
 //! use collections::Vec;
+//!
+//! // These symbols come from a linker script
+//! extern "C" {
+//!     static mut _heap_start: usize;
+//!     static mut _heap_end: usize;
+//! }
 //!
 //! #[no_mangle]
 //! pub fn main() -> ! {
 //!     // Initialize the heap BEFORE you use the allocator
-//!     unsafe { HEAP.init(0x2000_0000, 1024) }
+//!     unsafe { alloc_cortex_m::init(&mut _heap_start, &mut _heap_end) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
 //!     // ...
 //! }
+//! ```
+//!
+//! And in your linker script, you might have something like:
+//!
+//! ``` text
+//! /* space reserved for the stack */
+//! _stack_size = 0x1000;
+//!
+//! /* `.` is right after the .bss and .data sections */
+//! _heap_start = .;
+//! _heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
 //! ```
 
 #![allocator]
@@ -29,41 +45,46 @@
 extern crate cortex_m;
 extern crate linked_list_allocator;
 
-use core::{ptr, cmp};
+use core::{cmp, ptr};
 
+use linked_list_allocator::Heap;
 use cortex_m::interrupt::Mutex;
 
 /// A global UNINITIALIZED heap allocator
 ///
 /// You must initialize this heap using the
 /// [`init`](struct.Heap.html#method.init) method before using the allocator.
-pub static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
+static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
 
-/// A heap allocator
-// NOTE newtype to hide all the other Heap methods
-pub struct Heap {
-    inner: linked_list_allocator::Heap,
-}
-
-impl Heap {
-    const fn empty() -> Self {
-        Heap { inner: linked_list_allocator::Heap::empty() }
-    }
-
-    /// Initializes the heap
-    ///
-    /// This method must be called before you run any code that makes use of the
-    /// allocator.
-    ///
-    /// This method must be called exactly ONCE.
-    ///
-    /// `heap_bottom` is the address where the heap will be located. Note that
-    /// heap grows "upwards", towards larger addresses.
-    ///
-    /// `heap_size` is the size of the heap in bytes
-    pub unsafe fn init(&mut self, heap_bottom: usize, heap_size: usize) {
-        self.inner.init(heap_bottom, heap_size);
-    }
+/// Initializes the heap
+///
+/// This function must be called BEFORE you run any code that makes use of the
+/// allocator.
+///
+/// `start_addr` is the address where the heap will be located.
+///
+/// `end_addr` points to the end of the heap.
+///
+/// Note that:
+///
+/// - The heap grows "upwards", towards larger addresses. Thus `end_addr` must
+///   be larger than `start_addr`
+///
+/// - The size of the heap will actually be
+///   `(end_addr as usize) - (start_addr as usize) + 1` because the allocator
+///   won't use the byte at `end_addr`.
+///
+/// # Unsafety
+///
+/// Obey these or Bad Stuff will happen.
+///
+/// - This function must be called exactly ONCE.
+/// - `end_addr` > `start_addr`
+pub unsafe fn init(start_addr: *mut usize, end_addr: *mut usize) {
+    let start = start_addr as usize;
+    let end = end_addr as usize;
+    let size = (end - start) - 1;
+    HEAP.lock(|heap| heap.init(start, size));
 }
 
 // Rust allocator interface
@@ -73,7 +94,7 @@ impl Heap {
 /// Rust allocation function (c.f. malloc)
 pub extern "C" fn __rust_allocate(size: usize, align: usize) -> *mut u8 {
     HEAP.lock(|heap| {
-        heap.inner.allocate_first_fit(size, align).expect("out of memory")
+        heap.allocate_first_fit(size, align).expect("out of memory")
     })
 }
 
@@ -81,7 +102,7 @@ pub extern "C" fn __rust_allocate(size: usize, align: usize) -> *mut u8 {
 #[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn __rust_deallocate(ptr: *mut u8, size: usize, align: usize) {
-    HEAP.lock(|heap| unsafe { heap.inner.deallocate(ptr, size, align) });
+    HEAP.lock(|heap| unsafe { heap.deallocate(ptr, size, align) });
 }
 
 /// Rust re-allocation function (c.f. realloc)
