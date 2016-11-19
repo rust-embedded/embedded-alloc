@@ -1,0 +1,11 @@
+[package]
+name = "alloc-cortex-m"
+version = "0.1.0"
+authors = ["Jorge Aparicio <japaricious@gmail.com>"]
+
+[dependencies]
+cortex-m = "0.1.5"
+
+[dependencies.linked_list_allocator]
+branch = "init"
+git = "https://github.com/japaric/linked-list-allocator"
