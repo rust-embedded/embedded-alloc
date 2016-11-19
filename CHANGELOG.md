@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [breaking] Hid the HEAP variable. We now only expose an `init` function to
+  initialize the allocator.
+
 ## [v0.1.0] - 2016-11-19
 
 ### Added
