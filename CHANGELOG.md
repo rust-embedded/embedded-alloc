@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The heap size is `end_addr` - `start_addr`. Previously, it was wrongly
+  calculated as `end_addr - start_addr - 1`.
+
 ## [v0.2.0] - 2016-11-19
 
 ### Changed

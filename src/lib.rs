@@ -70,9 +70,8 @@ static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
 /// - The heap grows "upwards", towards larger addresses. Thus `end_addr` must
 ///   be larger than `start_addr`
 ///
-/// - The size of the heap will actually be
-///   `(end_addr as usize) - (start_addr as usize) + 1` because the allocator
-///   won't use the byte at `end_addr`.
+/// - The size of the heap is `(end_addr as usize) - (start_addr as usize)`. The
+///   allocator won't use the byte at `end_addr`.
 ///
 /// # Unsafety
 ///
@@ -83,7 +82,7 @@ static HEAP: Mutex<Heap> = Mutex::new(Heap::empty());
 pub unsafe fn init(start_addr: *mut usize, end_addr: *mut usize) {
     let start = start_addr as usize;
     let end = end_addr as usize;
-    let size = (end - start) - 1;
+    let size = end - start;
     HEAP.lock(|heap| heap.init(start, size));
 }
 
