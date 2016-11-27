@@ -5,7 +5,7 @@ documentation = "https://docs.rs/alloc-cortex-m"
 keywords = ["arm", "cortex-m", "allocator"]
 license = "MIT OR Apache-2.0"
 name = "alloc-cortex-m"
-version = "0.2.0"
+version = "0.2.1"
 
 [dependencies]
 cortex-m = "0.1.5"
