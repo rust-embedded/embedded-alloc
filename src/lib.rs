@@ -97,6 +97,15 @@ pub extern "C" fn __rust_allocate(size: usize, align: usize) -> *mut u8 {
     })
 }
 
+#[doc(hidden)]
+#[no_mangle]
+pub extern fn __rust_allocate_zeroed(size: usize, align: usize) -> *mut u8 {
+    let ptr = __rust_allocate(size, align);
+    if !ptr.is_null() {
+        ptr::write_bytes(ptr, 0, size);
+    }
+}
+
 /// Rust de-allocation function (c.f. free)
 #[doc(hidden)]
 #[no_mangle]
