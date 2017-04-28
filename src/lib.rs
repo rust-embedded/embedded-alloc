@@ -102,7 +102,9 @@ pub extern "C" fn __rust_allocate(size: usize, align: usize) -> *mut u8 {
 pub extern fn __rust_allocate_zeroed(size: usize, align: usize) -> *mut u8 {
     let ptr = __rust_allocate(size, align);
     if !ptr.is_null() {
-        ptr::write_bytes(ptr, 0, size);
+        unsafe {
+            ptr::write_bytes(ptr, 0, size);
+        }
     }
     ptr
 }
