@@ -104,6 +104,7 @@ pub extern fn __rust_allocate_zeroed(size: usize, align: usize) -> *mut u8 {
     if !ptr.is_null() {
         ptr::write_bytes(ptr, 0, size);
     }
+    ptr
 }
 
 /// Rust de-allocation function (c.f. free)
