@@ -77,7 +77,7 @@ impl CortexMHeap {
     ///
     /// `start_addr` is the address where the heap will be located.
     ///
-    /// `end_addr` points to the end of the heap.
+    /// `size` is the size of the heap in bytes.
     ///
     /// Note that:
     ///
