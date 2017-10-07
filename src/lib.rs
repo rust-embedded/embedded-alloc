@@ -15,14 +15,16 @@
 //!
 //! // These symbols come from a linker script
 //! extern "C" {
-//!     static mut _heap_start: usize;
-//!     static mut _heap_end: usize;
+//!     static mut _sheap: u32;
+//!     static mut _eheap: u32;
 //! }
 //!
 //! #[no_mangle]
 //! pub fn main() -> ! {
 //!     // Initialize the heap BEFORE you use the allocator
-//!     unsafe { ALLOCATOR.init(_heap_start, _heap_end - _heap_start) }
+//!     let start = unsafe { &mut _sheap as *mut u32 as usize };
+//!     let end = unsafe { &mut _sheap as *mut u32 as usize };
+//!     unsafe { ALLOCATOR.init(start, end - start) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
