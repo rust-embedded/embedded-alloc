@@ -110,4 +110,8 @@ unsafe impl<'a> Alloc for &'a CortexMHeap {
     unsafe fn dealloc(&mut self, ptr: *mut u8, layout: Layout) {
         self.heap.lock(|heap| heap.deallocate(ptr, layout));
     }
+    
+    fn oom(&mut self, _: AllocErr) -> ! {
+        panic!("Out of memory");
+    }
 }
