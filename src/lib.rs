@@ -47,22 +47,21 @@
 #![no_std]
 #![feature(alloc, allocator_api)]
 
+extern crate alloc;
 extern crate cortex_m;
 extern crate linked_list_allocator;
-extern crate alloc;
 
 use core::alloc::{GlobalAlloc, Layout, Opaque};
 use core::ptr::NonNull;
 
-use linked_list_allocator::Heap;
 use cortex_m::interrupt::Mutex;
+use linked_list_allocator::Heap;
 
 pub struct CortexMHeap {
     heap: Mutex<Heap>,
 }
 
 impl CortexMHeap {
-
     /// Crate a new UNINITIALIZED heap allocator
     ///
     /// You must initialize this heap using the
@@ -96,19 +95,21 @@ impl CortexMHeap {
     ///
     /// - This function must be called exactly ONCE.
     /// - `size > 0`
-    pub unsafe fn init(&self, start_addr: usize, size: usize){
+    pub unsafe fn init(&self, start_addr: usize, size: usize) {
         self.heap.lock(|heap| heap.init(start_addr, size));
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut Opaque {
-        self.heap.lock(|heap| {
-            heap.allocate_first_fit(layout)
-        }).ok().map_or(0 as *mut Opaque, |allocation| allocation.as_ptr())
+        self.heap
+            .lock(|heap| heap.allocate_first_fit(layout))
+            .ok()
+            .map_or(0 as *mut Opaque, |allocation| allocation.as_ptr())
     }
 
     unsafe fn dealloc(&self, ptr: *mut Opaque, layout: Layout) {
-        self.heap.lock(|heap| heap.deallocate(NonNull::new_unchecked(ptr), layout));
+        self.heap
+            .lock(|heap| heap.deallocate(NonNull::new_unchecked(ptr), layout));
     }
 }
