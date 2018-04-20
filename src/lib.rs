@@ -51,7 +51,8 @@ extern crate cortex_m;
 extern crate linked_list_allocator;
 extern crate alloc;
 
-use alloc::allocator::{Alloc, Layout, AllocErr};
+use core::alloc::{GlobalAlloc, Layout, Opaque};
+use core::ptr::NonNull;
 
 use linked_list_allocator::Heap;
 use cortex_m::interrupt::Mutex;
@@ -100,14 +101,14 @@ impl CortexMHeap {
     }
 }
 
-unsafe impl<'a> Alloc for &'a CortexMHeap {
-    unsafe fn alloc(&mut self, layout: Layout) -> Result<*mut u8, AllocErr> {
+unsafe impl GlobalAlloc for CortexMHeap {
+    unsafe fn alloc(&self, layout: Layout) -> *mut Opaque {
         self.heap.lock(|heap| {
             heap.allocate_first_fit(layout)
-        })
+        }).ok().map_or(0 as *mut Opaque, |allocation| allocation.as_ptr())
     }
 
-    unsafe fn dealloc(&mut self, ptr: *mut u8, layout: Layout) {
-        self.heap.lock(|heap| heap.deallocate(ptr, layout));
+    unsafe fn dealloc(&self, ptr: *mut Opaque, layout: Layout) {
+        self.heap.lock(|heap| heap.deallocate(NonNull::new_unchecked(ptr), layout));
     }
 }
