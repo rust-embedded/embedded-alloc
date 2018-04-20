@@ -5,9 +5,9 @@
 //! ```
 //! // Plug in the allocator crate
 //! extern crate alloc_cortex_m;
-//! extern crate collections;
+//! extern crate alloc;
 //!
-//! use collections::Vec;
+//! use alloc::Vec;
 //! use alloc_cortex_m::CortexMHeap;
 //!
 //! #[global_allocator]
