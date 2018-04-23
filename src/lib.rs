@@ -43,9 +43,10 @@
 //! _heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
 //! ```
 
+#![feature(alloc)]
+#![feature(allocator_api)]
 #![feature(const_fn)]
 #![no_std]
-#![feature(alloc, allocator_api)]
 
 extern crate alloc;
 extern crate cortex_m;
