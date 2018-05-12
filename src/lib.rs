@@ -3,9 +3,15 @@
 //! # Example
 //!
 //! ```
+//! #![feature(alloc)]
+//! #![feature(global_allocator)]
+//! #![feature(lang_items)]
+//!
 //! // Plug in the allocator crate
-//! extern crate alloc_cortex_m;
 //! extern crate alloc;
+//! extern crate alloc_cortex_m;
+//! #[macro_use]
+//! extern crate cortex_m_rt as rt; // v0.5.x
 //!
 //! use alloc::Vec;
 //! use alloc_cortex_m::CortexMHeap;
@@ -13,34 +19,30 @@
 //! #[global_allocator]
 //! static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
 //!
-//! // These symbols come from a linker script
-//! extern "C" {
-//!     static mut _sheap: u32;
-//!     static mut _eheap: u32;
-//! }
+//! entry!(main);
 //!
-//! #[no_mangle]
-//! pub fn main() -> ! {
-//!     // Initialize the heap BEFORE you use the allocator
-//!     let start = unsafe { &mut _sheap as *mut u32 as usize };
-//!     let end = unsafe { &mut _sheap as *mut u32 as usize };
-//!     unsafe { ALLOCATOR.init(start, end - start) }
+//! fn main() -> ! {
+//!     // Initialize the allocator BEFORE you use it
+//!     let start = rt::heap_start() as usize;
+//!     let size = 1024; // in bytes
+//!     unsafe { ALLOCATOR.init(start, size) }
 //!
 //!     let mut xs = Vec::new();
 //!     xs.push(1);
-//!     // ...
+//!
+//!     loop { /* .. */ }
 //! }
-//! ```
 //!
-//! And in your linker script, you might have something like:
+//! // required: define how Out Of Memory (OOM) conditions should be handled
+//! // *if* no other crate has already defined `oom`
+//! #[lang = "oom"]
+//! #[no_mangle]
+//! pub fn rust_oom() -> ! {
+//!     // ..
+//! }
 //!
-//! ``` text
-//! /* space reserved for the stack */
-//! _stack_size = 0x1000;
 //!
-//! /* `.` is right after the .bss and .data sections */
-//! _heap_start = .;
-//! _heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
+//! // omitted: exception handlers
 //! ```
 
 #![feature(alloc)]
