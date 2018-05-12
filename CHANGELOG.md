@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.4] - 2018-05-12
+
+### Changed
+
+- Update the example in the crate level documentation to show how to define the new `oom` lang item.
+
 ## [v0.3.3] - 2018-04-23
 
 - Bumped the dependency of the `linked_list_allocator` crate to v0.6.0.
@@ -55,7 +61,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.4...HEAD
+[v0.3.4]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.3...v0.3.4
 [v0.3.3]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.2...v0.3.3
 [v0.3.2]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.1...v0.3.2
 [v0.3.1]: https://github.com/japaric/alloc-cortex-m/compare/v0.3.0...v0.3.1
