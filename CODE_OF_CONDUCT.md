@@ -1,7 +1,5 @@
 # The Rust Code of Conduct
 
-A version of this document [can be found online](https://www.rust-lang.org/conduct.html).
-
 ## Conduct
 
 **Contact**: [Cortex-M team](https://github.com/rust-embedded/wg#the-cortex-m-team)
