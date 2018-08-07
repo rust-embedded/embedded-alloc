@@ -5,6 +5,8 @@
 
 > A heap allocator for Cortex-M processors
 
+This project is developed and maintained by the [Cortex-M team][team].
+
 ## [Documentation](https://docs.rs/alloc-cortex-m)
 
 ## [Change log](CHANGELOG.md)
