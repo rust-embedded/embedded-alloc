@@ -1,14 +1,14 @@
 [package]
 authors = [
-    "Jorge Aparicio <jorge@japaric.io>",
     "Jonathan Pallant <github@thejpster.org.uk>",
+    "Jorge Aparicio <jorge@japaric.io>",
 ]
 description = "A heap allocator for Cortex-M processors"
 documentation = "https://docs.rs/alloc-cortex-m"
 keywords = [
+    "allocator",
     "arm",
     "cortex-m",
-    "allocator",
 ]
 license = "MIT OR Apache-2.0"
 name = "alloc-cortex-m"
