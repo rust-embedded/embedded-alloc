@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Bumped the dependency of the `linked_list_allocator` crate to v0.8.1.
+- Removed `#![feature(alloc)]` to supress compiler warning about stability for alloc 
+
 ## [v0.3.5] - 2018-06-19
 
 ### Fixed
