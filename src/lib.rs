@@ -45,7 +45,6 @@
 //! // omitted: exception handlers
 //! ```
 
-#![feature(alloc)]
 #![feature(allocator_api)]
 #![feature(const_fn)]
 #![no_std]
