@@ -1,55 +1,12 @@
-//! A heap allocator for Cortex-M processors
+//! A heap allocator for Cortex-M processors.
+//!
+//! Note that using this as your global allocator requires nightly Rust.
 //!
 //! # Example
 //!
-//! ```
-//! #![feature(alloc)]
-//! #![feature(global_allocator)]
-//! #![feature(lang_items)]
-//!
-//! // Plug in the allocator crate
-//! extern crate alloc;
-//! extern crate alloc_cortex_m;
-//! #[macro_use]
-//! extern crate cortex_m_rt as rt; // v0.5.x
-//!
-//! use alloc::Vec;
-//! use alloc_cortex_m::CortexMHeap;
-//!
-//! #[global_allocator]
-//! static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
-//!
-//! entry!(main);
-//!
-//! fn main() -> ! {
-//!     // Initialize the allocator BEFORE you use it
-//!     let start = rt::heap_start() as usize;
-//!     let size = 1024; // in bytes
-//!     unsafe { ALLOCATOR.init(start, size) }
-//!
-//!     let mut xs = Vec::new();
-//!     xs.push(1);
-//!
-//!     loop { /* .. */ }
-//! }
-//!
-//! // required: define how Out Of Memory (OOM) conditions should be handled
-//! // *if* no other crate has already defined `oom`
-//! #[lang = "oom"]
-//! #[no_mangle]
-//! pub fn rust_oom() -> ! {
-//!     // ..
-//! }
-//!
-//!
-//! // omitted: exception handlers
-//! ```
+//! For a usage example, see `examples/global_alloc.rs`.
 
 #![no_std]
-
-extern crate alloc;
-extern crate cortex_m;
-extern crate linked_list_allocator;
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::NonNull;
