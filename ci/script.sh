@@ -4,7 +4,10 @@ set -euxo pipefail
 
 main() {
     cargo check --target "$TARGET"
-    cargo build --target "$TARGET" --examples
+
+    if [ "$TARGET" != x86_64-unknown-linux-gnu ]; then
+        cargo build --target "$TARGET" --examples
+    fi
 }
 
 main
