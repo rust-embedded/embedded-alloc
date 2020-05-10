@@ -45,8 +45,6 @@
 //! // omitted: exception handlers
 //! ```
 
-#![feature(allocator_api)]
-#![feature(const_fn)]
 #![no_std]
 
 extern crate alloc;
