@@ -9,6 +9,7 @@ description = "A heap allocator for Cortex-M processors"
 repository = "https://github.com/rust-embedded/alloc-cortex-m"
 documentation = "https://docs.rs/alloc-cortex-m"
 readme = "README.md"
+edition = "2018"
 
 keywords = [
     "allocator",
@@ -25,3 +26,6 @@ cortex-m = "0.1.5"
 [dependencies.linked_list_allocator]
 default-features = false
 version = "0.8.1"
+
+[dev-dependencies]
+cortex-m-rt = "0.6.12"
