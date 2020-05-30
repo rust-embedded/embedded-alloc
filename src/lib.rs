@@ -10,12 +10,29 @@
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::NonNull;
+use core::cell::Cell;
 
 use cortex_m::interrupt::Mutex;
 use linked_list_allocator::Heap;
 
 pub struct CortexMHeap {
-    heap: Mutex<Heap>,
+    heap: Mutex<Cell<Heap>>,
+}
+
+trait Lock {
+    type Inner;
+
+    fn lock<T>(&self, f: impl FnOnce(&mut Self::Inner) -> T) -> T;
+}
+
+impl<T> Lock for Mutex<Cell<T>> {
+    type Inner = T;
+
+    fn lock<R>(&self, f: impl FnOnce(&mut Self::Inner) -> R) -> R {
+        cortex_m::interrupt::free(|cs| {
+            f(unsafe { self.borrow(cs).as_ptr().as_mut().unwrap() })
+        })
+    }
 }
 
 impl CortexMHeap {
@@ -25,7 +42,7 @@ impl CortexMHeap {
     /// [`init`](struct.CortexMHeap.html#method.init) method before using the allocator.
     pub const fn empty() -> CortexMHeap {
         CortexMHeap {
-            heap: Mutex::new(Heap::empty()),
+            heap: Mutex::new(Cell::new(Heap::empty())),
         }
     }
 
