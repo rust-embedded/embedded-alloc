@@ -8,6 +8,7 @@
 
 #![no_std]
 
+use core::cell::RefCell;
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::NonNull;
 
@@ -15,7 +16,7 @@ use cortex_m::interrupt::Mutex;
 use linked_list_allocator::Heap;
 
 pub struct CortexMHeap {
-    heap: Mutex<Heap>,
+    heap: Mutex<RefCell<Heap>>,
 }
 
 impl CortexMHeap {
@@ -25,7 +26,7 @@ impl CortexMHeap {
     /// [`init`](struct.CortexMHeap.html#method.init) method before using the allocator.
     pub const fn empty() -> CortexMHeap {
         CortexMHeap {
-            heap: Mutex::new(Heap::empty()),
+            heap: Mutex::new(RefCell::new(Heap::empty())),
         }
     }
 
@@ -53,20 +54,29 @@ impl CortexMHeap {
     /// - This function must be called exactly ONCE.
     /// - `size > 0`
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
-        self.heap.lock(|heap| heap.init(start_addr, size));
+        cortex_m::interrupt::free(|cs| {
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .init(start_addr, size);
+        });
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        self.heap
-            .lock(|heap| heap.allocate_first_fit(layout))
+        cortex_m::interrupt::free(|cs| self.heap
+            .borrow(cs)
+            .borrow_mut()
+            .allocate_first_fit(layout)
             .ok()
-            .map_or(0 as *mut u8, |allocation| allocation.as_ptr())
+            .map_or(0 as *mut u8, |allocation| allocation.as_ptr()))
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        self.heap
-            .lock(|heap| heap.deallocate(NonNull::new_unchecked(ptr), layout));
+        cortex_m::interrupt::free(|cs| self.heap
+            .borrow(cs)
+            .borrow_mut()
+            .deallocate(NonNull::new_unchecked(ptr), layout));
     }
 }

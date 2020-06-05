@@ -3,6 +3,7 @@ authors = [
     "The Cortex-M Team <cortex-m@teams.rust-embedded.org>",
     "Jonathan Pallant <github@thejpster.org.uk>",
     "Jorge Aparicio <jorge@japaric.io>",
+    "Sébastien Béchet <sebastien.bechet@osinix.com>",
 ]
 
 description = "A heap allocator for Cortex-M processors"
@@ -21,7 +22,7 @@ name = "alloc-cortex-m"
 version = "0.3.5"
 
 [dependencies]
-cortex-m = "0.1.5"
+cortex-m = "0.6.2"
 
 [dependencies.linked_list_allocator]
 default-features = false
