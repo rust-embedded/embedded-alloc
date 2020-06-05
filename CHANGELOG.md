@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-- Bumped the dependency of the `linked_list_allocator` crate to v0.8.1.
+- Bumped the dependency of the `cortex-m` crate to v0.6.2.
+- Bumped the dependency of the `linked_list_allocator` crate to v0.8.4.
 - Removed `#![feature(alloc)]` to supress compiler warning about stability for alloc 
 
 ## [v0.3.5] - 2018-06-19
