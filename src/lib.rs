@@ -61,6 +61,26 @@ impl CortexMHeap {
                 .init(start_addr, size);
         });
     }
+
+    /// Returns an estimate of the amount of bytes in use.
+    pub fn used(&self) -> usize {
+        cortex_m::interrupt::free(|cs| {
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .used()
+        })
+    }
+
+    /// Returns an estimate of the amount of bytes available.
+    pub fn free(&self) -> usize {
+        cortex_m::interrupt::free(|cs| {
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .free()
+        })
+    }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
