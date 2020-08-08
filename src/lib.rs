@@ -8,12 +8,13 @@
 
 #![no_std]
 
-use core::cell::RefCell;
 use core::alloc::{GlobalAlloc, Layout};
+use core::cell::RefCell;
 use core::ptr::NonNull;
 
 use cortex_m::interrupt::Mutex;
-use linked_list_allocator::Heap;
+// use linked_list_allocator::Heap;
+use tlsf::Tlsf as Heap;
 
 pub struct CortexMHeap {
     heap: Mutex<RefCell<Heap>>,
@@ -26,7 +27,7 @@ impl CortexMHeap {
     /// [`init`](struct.CortexMHeap.html#method.init) method before using the allocator.
     pub const fn empty() -> CortexMHeap {
         CortexMHeap {
-            heap: Mutex::new(RefCell::new(Heap::empty())),
+            heap: Mutex::new(RefCell::new(Heap::new())),
         }
     }
 
@@ -53,30 +54,32 @@ impl CortexMHeap {
     ///
     /// - This function must be called exactly ONCE.
     /// - `size > 0`
-    pub unsafe fn init(&self, start_addr: usize, size: usize) {
-        cortex_m::interrupt::free(|cs| {
+    pub unsafe fn extend(&self, block: &'static mut [u8]) {
+        cortex_m::interrupt::free(move |cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()
-                .init(start_addr, size);
+                .extend(block);
         });
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        cortex_m::interrupt::free(|cs| self.heap
-            .borrow(cs)
-            .borrow_mut()
-            .allocate_first_fit(layout)
-            .ok()
-            .map_or(0 as *mut u8, |allocation| allocation.as_ptr()))
+        cortex_m::interrupt::free(|cs| {
+            let returned_mem = self.heap.borrow(cs).borrow_mut().alloc(layout);
+            match returned_mem {
+                Ok(mem_ptr) => mem_ptr.as_ptr(),
+                Err(_) => 0_usize as *mut u8,
+            }
+        })
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        cortex_m::interrupt::free(|cs| self.heap
-            .borrow(cs)
-            .borrow_mut()
-            .deallocate(NonNull::new_unchecked(ptr), layout));
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
+        if let Some(mem_ptr) = NonNull::new(ptr) {
+            cortex_m::interrupt::free(|cs| {
+                self.heap.borrow(cs).borrow_mut().dealloc(mem_ptr);
+            });
+        }
     }
 }
