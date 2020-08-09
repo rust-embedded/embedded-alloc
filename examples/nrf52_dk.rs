@@ -4,8 +4,8 @@
 #![feature(alloc_error_handler)]
 
 extern crate alloc;
-extern crate panic_rtt;
 extern crate nrf52832_hal;
+extern crate panic_rtt;
 
 use alloc::vec::Vec;
 use alloc_cortex_m::CortexMHeap;
@@ -26,18 +26,16 @@ fn main() -> ! {
         Aligned([0; tlsf::MAX_BLOCK_SIZE as usize]);
 
     let mut log = NonBlockingOutput::new();
-    writeln!(log, "Output stream opened");
-    // Initialize the allocator BEFORE you use it
-    // let start = cortex_m_rt::heap_start() as usize;
-    // let size = 1024; // in bytes
-    unsafe { ALLOCATOR.extend(&mut M.0) }
+    writeln!(log, "Output stream opened").ok().unwrap();
 
-    writeln!(log, "Heap extended");
+    ALLOCATOR.extend(&mut M.0);
+
+    writeln!(log, "Heap extended").ok().unwrap();
 
     let mut xs = Vec::new();
     xs.push(1);
 
-    writeln!(log, "Vector instantiated");
+    writeln!(log, "Vector instantiated").ok().unwrap();
 
     loop {
         xs.push(1);

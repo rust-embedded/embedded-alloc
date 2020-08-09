@@ -22,10 +22,7 @@ fn main() -> ! {
     static mut M: Aligned<[u8; tlsf::MAX_BLOCK_SIZE as usize]> =
         Aligned([0; tlsf::MAX_BLOCK_SIZE as usize]);
 
-    // Initialize the allocator BEFORE you use it
-    // let start = cortex_m_rt::heap_start() as usize;
-    // let size = 1024; // in bytes
-    unsafe { ALLOCATOR.extend(&mut M.0) }
+    ALLOCATOR.extend(&mut M.0);
 
     let mut xs = Vec::new();
     xs.push(1);
