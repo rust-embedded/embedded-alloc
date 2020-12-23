@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `const_mut_refs` feature to the dependency `linked_list_allocator` crate.
+
+### Changed
+
+- Bumped the dependency of the `linked_list_allocator` crate to v0.8.8.
+
 ## [v0.4.0] - 2020-06-05
 
 - Bumped the `cortex-m` dependency to v0.6.2.
