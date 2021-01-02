@@ -4,10 +4,10 @@
 
 extern crate alloc;
 
-use core::panic::PanicInfo;
-use core::alloc::Layout;
 use alloc::vec::Vec;
 use alloc_cortex_m::CortexMHeap;
+use core::alloc::Layout;
+use core::panic::PanicInfo;
 use cortex_m_rt::entry;
 
 #[global_allocator]

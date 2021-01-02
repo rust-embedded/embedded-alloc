@@ -8,8 +8,8 @@
 
 #![no_std]
 
-use core::cell::RefCell;
 use core::alloc::{GlobalAlloc, Layout};
+use core::cell::RefCell;
 use core::ptr::NonNull;
 
 use cortex_m::interrupt::Mutex;
@@ -55,48 +55,39 @@ impl CortexMHeap {
     /// - `size > 0`
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
         cortex_m::interrupt::free(|cs| {
-            self.heap
-                .borrow(cs)
-                .borrow_mut()
-                .init(start_addr, size);
+            self.heap.borrow(cs).borrow_mut().init(start_addr, size);
         });
     }
 
     /// Returns an estimate of the amount of bytes in use.
     pub fn used(&self) -> usize {
-        cortex_m::interrupt::free(|cs| {
-            self.heap
-                .borrow(cs)
-                .borrow_mut()
-                .used()
-        })
+        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().used())
     }
 
     /// Returns an estimate of the amount of bytes available.
     pub fn free(&self) -> usize {
-        cortex_m::interrupt::free(|cs| {
-            self.heap
-                .borrow(cs)
-                .borrow_mut()
-                .free()
-        })
+        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().free())
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        cortex_m::interrupt::free(|cs| self.heap
-            .borrow(cs)
-            .borrow_mut()
-            .allocate_first_fit(layout)
-            .ok()
-            .map_or(0 as *mut u8, |allocation| allocation.as_ptr()))
+        cortex_m::interrupt::free(|cs| {
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .allocate_first_fit(layout)
+                .ok()
+                .map_or(0 as *mut u8, |allocation| allocation.as_ptr())
+        })
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        cortex_m::interrupt::free(|cs| self.heap
-            .borrow(cs)
-            .borrow_mut()
-            .deallocate(NonNull::new_unchecked(ptr), layout));
+        cortex_m::interrupt::free(|cs| {
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .deallocate(NonNull::new_unchecked(ptr), layout)
+        });
     }
 }
