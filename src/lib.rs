@@ -10,7 +10,7 @@
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::cell::RefCell;
-use core::ptr::NonNull;
+use core::ptr::{self, NonNull};
 
 use cortex_m::interrupt::Mutex;
 use linked_list_allocator::Heap;
@@ -47,7 +47,7 @@ impl CortexMHeap {
     /// - The size of the heap is `(end_addr as usize) - (start_addr as usize)`. The
     ///   allocator won't use the byte at `end_addr`.
     ///
-    /// # Unsafety
+    /// # Safety
     ///
     /// Obey these or Bad Stuff will happen.
     ///
@@ -78,7 +78,7 @@ unsafe impl GlobalAlloc for CortexMHeap {
                 .borrow_mut()
                 .allocate_first_fit(layout)
                 .ok()
-                .map_or(0 as *mut u8, |allocation| allocation.as_ptr())
+                .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
         })
     }
 
