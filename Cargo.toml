@@ -19,14 +19,14 @@ keywords = [
 ]
 license = "MIT OR Apache-2.0"
 name = "alloc-cortex-m"
-version = "0.4.0"
+version = "0.4.1"
 
 [dependencies]
 cortex-m = "0.6.2"
 
 [dependencies.linked_list_allocator]
 default-features = false
-version = "0.8.8"
+version = "0.8.11"
 features = ["const_mut_refs"]
 
 [dev-dependencies]
