@@ -19,7 +19,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --examples
+          args: --examples --target thumbv6m-none-eabi
       - uses: imjohnbo/issue-bot@v2
         if: failure()
         with:
