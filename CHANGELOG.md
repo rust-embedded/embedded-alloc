@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.2] - 2022-01-04
+
+### Changed
+
+- Updated `cortex-m` dependency to 0.7.2.
+
 ## [v0.4.1] - 2021-01-02
 
 ### Added
@@ -83,7 +89,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.2...HEAD
+[v0.4.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.1...v0.4.2
 [v0.4.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.5...v0.4.0
 [v0.3.5]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.4...v0.3.5

@@ -19,7 +19,7 @@ keywords = [
 ]
 license = "MIT OR Apache-2.0"
 name = "alloc-cortex-m"
-version = "0.4.1"
+version = "0.4.2"
 
 [dependencies]
 cortex-m = "0.7.2"
