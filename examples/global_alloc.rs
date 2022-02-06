@@ -16,9 +16,12 @@ static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
 #[entry]
 fn main() -> ! {
     // Initialize the allocator BEFORE you use it
-    let start = cortex_m_rt::heap_start() as usize;
-    let size = 1024; // in bytes
-    unsafe { ALLOCATOR.init(start, size) }
+    {
+        use core::mem::MaybeUninit;
+        const HEAP_SIZE: usize = 1024;
+        static mut HEAP: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
+        unsafe { ALLOCATOR.init((&mut HEAP).as_ptr() as usize, HEAP_SIZE) }
+    }
 
     let mut xs = Vec::new();
     xs.push(1);
