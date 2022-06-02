@@ -9,6 +9,11 @@ This project is developed and maintained by the [Cortex-M team][team].
 
 ## [Documentation](https://docs.rs/alloc-cortex-m)
 
+## Features
+
+The `nrf-softdevice` feature replaces `cortex_m::interrupt::free()` with
+`critical_section::with()` when block interrupts.
+
 ## [Change log](CHANGELOG.md)
 
 ## License

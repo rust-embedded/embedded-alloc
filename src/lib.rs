@@ -12,8 +12,33 @@ use core::alloc::{GlobalAlloc, Layout};
 use core::cell::RefCell;
 use core::ptr::{self, NonNull};
 
-use cortex_m::interrupt::Mutex;
+#[cfg(not(feature = "nrf-softdevice"))]
+use cortex_m::interrupt::{
+    Mutex,
+    CriticalSection,
+};
+#[cfg(feature = "nrf-softdevice")]
+use {
+    critical_section::CriticalSection,
+    embassy::blocking_mutex::CriticalSectionMutex as Mutex,
+};
 use linked_list_allocator::Heap;
+
+#[cfg(not(feature = "nrf-softdevice"))]
+#[inline]
+fn block_interrupts<F, R>(f: F) -> R
+    where F: FnOnce(&CriticalSection) -> R
+{
+    cortex_m::interrupt::free(f)
+}
+
+#[cfg(feature = "nrf-softdevice")]
+#[inline]
+fn block_interrupts<F, R>(f: F) -> R
+    where F: FnOnce(CriticalSection) -> R
+{
+    critical_section::with(f)
+}
 
 pub struct CortexMHeap {
     heap: Mutex<RefCell<Heap>>,
@@ -24,7 +49,15 @@ impl CortexMHeap {
     ///
     /// You must initialize this heap using the
     /// [`init`](struct.CortexMHeap.html#method.init) method before using the allocator.
+    #[cfg(not(feature = "nrf-softdevice"))]
     pub const fn empty() -> CortexMHeap {
+        CortexMHeap {
+            heap: Mutex::new(RefCell::new(Heap::empty())),
+        }
+    }
+
+    #[cfg(feature = "nrf-softdevice")]
+    pub fn empty() -> CortexMHeap {
         CortexMHeap {
             heap: Mutex::new(RefCell::new(Heap::empty())),
         }
@@ -54,25 +87,25 @@ impl CortexMHeap {
     /// - This function must be called exactly ONCE.
     /// - `size > 0`
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
-        cortex_m::interrupt::free(|cs| {
+        block_interrupts(|cs| {
             self.heap.borrow(cs).borrow_mut().init(start_addr, size);
         });
     }
 
     /// Returns an estimate of the amount of bytes in use.
     pub fn used(&self) -> usize {
-        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().used())
+        block_interrupts(|cs| self.heap.borrow(cs).borrow_mut().used())
     }
 
     /// Returns an estimate of the amount of bytes available.
     pub fn free(&self) -> usize {
-        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().free())
+        block_interrupts(|cs| self.heap.borrow(cs).borrow_mut().free())
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        cortex_m::interrupt::free(|cs| {
+        block_interrupts(|cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()
@@ -83,7 +116,7 @@ unsafe impl GlobalAlloc for CortexMHeap {
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        cortex_m::interrupt::free(|cs| {
+        block_interrupts(|cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()

@@ -29,5 +29,16 @@ default-features = false
 version = "0.8.11"
 features = ["const_mut_refs"]
 
+[dependencies.critical-section]
+version = "0.2.7"
+optional = true
+
+[dependencies.embassy]
+version = "0.1.0"
+optional = true
+
+[features]
+nrf-softdevice = ["dep:critical-section", "dep:embassy"]
+
 [dev-dependencies]
 cortex-m-rt = "0.6.12"
