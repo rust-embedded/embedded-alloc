@@ -42,3 +42,6 @@ nrf-softdevice = ["dep:critical-section", "dep:embassy"]
 
 [dev-dependencies]
 cortex-m-rt = "0.6.12"
+
+# [patch.crates-io]
+# embassy = { git = "https://github.com/embassy-rs/embassy" }
