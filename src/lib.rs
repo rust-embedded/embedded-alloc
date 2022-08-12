@@ -12,7 +12,7 @@ use core::alloc::{GlobalAlloc, Layout};
 use core::cell::RefCell;
 use core::ptr::{self, NonNull};
 
-use cortex_m::interrupt::Mutex;
+use critical_section::Mutex;
 use linked_list_allocator::Heap;
 
 pub struct CortexMHeap {
@@ -54,7 +54,7 @@ impl CortexMHeap {
     /// - This function must be called exactly ONCE.
     /// - `size > 0`
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
-        cortex_m::interrupt::free(|cs| {
+        critical_section::with(|cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()
@@ -64,18 +64,18 @@ impl CortexMHeap {
 
     /// Returns an estimate of the amount of bytes in use.
     pub fn used(&self) -> usize {
-        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().used())
+        critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().used())
     }
 
     /// Returns an estimate of the amount of bytes available.
     pub fn free(&self) -> usize {
-        cortex_m::interrupt::free(|cs| self.heap.borrow(cs).borrow_mut().free())
+        critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().free())
     }
 }
 
 unsafe impl GlobalAlloc for CortexMHeap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        cortex_m::interrupt::free(|cs| {
+        critical_section::with(|cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()
@@ -86,7 +86,7 @@ unsafe impl GlobalAlloc for CortexMHeap {
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        cortex_m::interrupt::free(|cs| {
+        critical_section::with(|cs| {
             self.heap
                 .borrow(cs)
                 .borrow_mut()

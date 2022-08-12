@@ -22,7 +22,7 @@ name = "alloc-cortex-m"
 version = "0.4.3"
 
 [dependencies]
-cortex-m = "0.7.2"
+critical-section = "1.0"
 
 [dependencies.linked_list_allocator]
 default-features = false
@@ -30,4 +30,5 @@ version = "0.10.4"
 features = ["const_mut_refs"]
 
 [dev-dependencies]
-cortex-m-rt = "0.6.12"
+cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7"
