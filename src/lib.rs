@@ -55,7 +55,10 @@ impl CortexMHeap {
     /// - `size > 0`
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
         cortex_m::interrupt::free(|cs| {
-            self.heap.borrow(cs).borrow_mut().init(start_addr, size);
+            self.heap
+                .borrow(cs)
+                .borrow_mut()
+                .init(start_addr as *mut u8, size);
         });
     }
 
