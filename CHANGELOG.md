@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.3] - 2022-11-03
+
+### Changed
+
+- Updated `linked_list_allocator` dependency to 0.10.4, which fixes
+  CVE-2022-36086/RUSTSEC-2022-0063.
+
 ## [v0.4.2] - 2022-01-04
 
 ### Changed
@@ -89,7 +96,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.3...HEAD
+[v0.4.3]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.2...v0.4.3
 [v0.4.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.1...v0.4.2
 [v0.4.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.5...v0.4.0
