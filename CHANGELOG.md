@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.5.0] - 2022-12-06
+
+### Changed
+
+- Renamed crate from `alloc-cortex-m` to `embedded-alloc`.
+- Renamed `CortexMHeap` to `Heap`.
+- Use `critical-section` to lock the heap, instead of `cortex_m::interrupt::free()`.
+  This allows using this crate on non-Cortex-M systems, or on
+  Cortex-M systems that require a custom critical section implementation.
+
 ## [v0.4.3] - 2022-11-03
 
 ### Changed
@@ -96,17 +106,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.3...HEAD
-[v0.4.3]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.2...v0.4.3
-[v0.4.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.1...v0.4.2
-[v0.4.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.0...v0.4.1
-[v0.4.0]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.5...v0.4.0
-[v0.3.5]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.4...v0.3.5
-[v0.3.4]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.3...v0.3.4
-[v0.3.3]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.2...v0.3.3
-[v0.3.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.1...v0.3.2
-[v0.3.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.3.0...v0.3.1
-[v0.3.0]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.2.2...v0.3.0
-[v0.2.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.2.1...v0.2.2
-[v0.2.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.2.0...v0.2.1
-[v0.2.0]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.1.0...v0.2.0
+[Unreleased]: https://github.com/rust-embedded/embedded-alloc/compare/v0.5.0...HEAD
+[v0.5.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.3...v0.5.0
+[v0.4.3]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.2...v0.4.3
+[v0.4.2]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.1...v0.4.2
+[v0.4.1]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.0...v0.4.1
+[v0.4.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.5...v0.4.0
+[v0.3.5]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.4...v0.3.5
+[v0.3.4]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.3...v0.3.4
+[v0.3.3]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.2...v0.3.3
+[v0.3.2]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.1...v0.3.2
+[v0.3.1]: https://github.com/rust-embedded/embedded-alloc/compare/v0.3.0...v0.3.1
+[v0.3.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.2.2...v0.3.0
+[v0.2.2]: https://github.com/rust-embedded/embedded-alloc/compare/v0.2.1...v0.2.2
+[v0.2.1]: https://github.com/rust-embedded/embedded-alloc/compare/v0.2.0...v0.2.1
+[v0.2.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.1.0...v0.2.0

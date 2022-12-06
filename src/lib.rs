@@ -1,11 +1,4 @@
-//! A heap allocator for Cortex-M processors.
-//!
-//! Note that using this as your global allocator requires nightly Rust.
-//!
-//! # Example
-//!
-//! For a usage example, see `examples/global_alloc.rs`.
-
+#![doc = include_str!("../README.md")]
 #![no_std]
 
 use core::alloc::{GlobalAlloc, Layout};
@@ -13,20 +6,20 @@ use core::cell::RefCell;
 use core::ptr::{self, NonNull};
 
 use critical_section::Mutex;
-use linked_list_allocator::Heap;
+use linked_list_allocator::Heap as LLHeap;
 
-pub struct CortexMHeap {
-    heap: Mutex<RefCell<Heap>>,
+pub struct Heap {
+    heap: Mutex<RefCell<LLHeap>>,
 }
 
-impl CortexMHeap {
+impl Heap {
     /// Crate a new UNINITIALIZED heap allocator
     ///
     /// You must initialize this heap using the
-    /// [`init`](struct.CortexMHeap.html#method.init) method before using the allocator.
-    pub const fn empty() -> CortexMHeap {
-        CortexMHeap {
-            heap: Mutex::new(RefCell::new(Heap::empty())),
+    /// [`init`](Self::init) method before using the allocator.
+    pub const fn empty() -> Heap {
+        Heap {
+            heap: Mutex::new(RefCell::new(LLHeap::empty())),
         }
     }
 
@@ -73,7 +66,7 @@ impl CortexMHeap {
     }
 }
 
-unsafe impl GlobalAlloc for CortexMHeap {
+unsafe impl GlobalAlloc for Heap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         critical_section::with(|cs| {
             self.heap
