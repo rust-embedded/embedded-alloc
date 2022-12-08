@@ -1,13 +1,19 @@
-[![crates.io](https://img.shields.io/crates/d/alloc-cortex-m.svg)](https://crates.io/crates/alloc-cortex-m)
-[![crates.io](https://img.shields.io/crates/v/alloc-cortex-m.svg)](https://crates.io/crates/alloc-cortex-m)
+[![crates.io](https://img.shields.io/crates/d/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
+[![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
 
-# `alloc-cortex-m`
+# `embedded-alloc`
 
-> A heap allocator for Cortex-M processors
+> A heap allocator for embedded systems.
+
+Note that using this as your global allocator requires nightly Rust.
 
 This project is developed and maintained by the [Cortex-M team][team].
 
-## [Documentation](https://docs.rs/alloc-cortex-m)
+## Example
+
+For a usage example, see `examples/global_alloc.rs`.
+
+## [Documentation](https://docs.rs/embedded-alloc)
 
 ## [Change log](CHANGELOG.md)
 

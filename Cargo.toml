@@ -6,23 +6,25 @@ authors = [
     "Sébastien Béchet <sebastien.bechet@osinix.com>",
 ]
 
-description = "A heap allocator for Cortex-M processors"
-repository = "https://github.com/rust-embedded/alloc-cortex-m"
-documentation = "https://docs.rs/alloc-cortex-m"
+description = "A heap allocator for embedded systems"
+repository = "https://github.com/rust-embedded/embedded-alloc"
+documentation = "https://docs.rs/embedded-alloc"
 readme = "README.md"
 edition = "2018"
 
 keywords = [
     "allocator",
+    "embedded",
     "arm",
+    "riscv",
     "cortex-m",
 ]
 license = "MIT OR Apache-2.0"
-name = "alloc-cortex-m"
-version = "0.4.3"
+name = "embedded-alloc"
+version = "0.5.0"
 
 [dependencies]
-cortex-m = "0.7.2"
+critical-section = "1.0"
 
 [dependencies.linked_list_allocator]
 default-features = false
@@ -30,4 +32,5 @@ version = "0.10.4"
 features = ["const_mut_refs"]
 
 [dev-dependencies]
-cortex-m-rt = "0.6.12"
+cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7"
