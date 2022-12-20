@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.4] - 2022-12-20
+
+- Added deprecation note and pointer to embedded-alloc crate in README.
+
 ## [v0.4.3] - 2022-11-03
 
 ### Changed
@@ -96,7 +100,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.4...HEAD
+[v0.4.4]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.3...v0.4.4
 [v0.4.3]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.2...v0.4.3
 [v0.4.2]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.1...v0.4.2
 [v0.4.1]: https://github.com/rust-embedded/alloc-cortex-m/compare/v0.4.0...v0.4.1
