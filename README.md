@@ -3,6 +3,11 @@
 
 # `alloc-cortex-m`
 
+**This crate is deprecated; please use [`embedded-alloc`](https://crates.io/crates/embedded-alloc) instead.**
+
+`embedded-alloc` is the latest version of `alloc-cortex-m`, but supports
+more than just cortex-m platforms.
+
 > A heap allocator for Cortex-M processors
 
 This project is developed and maintained by the [Cortex-M team][team].
