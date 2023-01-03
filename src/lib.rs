@@ -34,11 +34,12 @@ impl Heap {
     ///
     /// Note that:
     ///
-    /// - The heap grows "upwards", towards larger addresses. Thus `end_addr` must
-    ///   be larger than `start_addr`
+    /// - The heap grows "upwards", towards larger addresses. Thus `start_addr` will
+    ///   be the smallest address used.
     ///
-    /// - The size of the heap is `(end_addr as usize) - (start_addr as usize)`. The
-    ///   allocator won't use the byte at `end_addr`.
+    /// - The largest address used is `start_addr + size - 1`, so if `start_addr` is
+    ///   `0x1000` and `size` is `0x30000` then the allocator won't use memory at
+    ///   addresses `0x31000` and larger.
     ///
     /// # Safety
     ///
