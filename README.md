@@ -5,7 +5,8 @@
 
 > A heap allocator for embedded systems.
 
-Note that using this as your global allocator requires nightly Rust.
+Note that using this as your global allocator requires Rust 1.68.
+(With earlier versions, you need the unstable feature `#![feature(default_alloc_error_handler)]`)
 
 This project is developed and maintained by the [Cortex-M team][team].
 
