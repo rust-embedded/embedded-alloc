@@ -14,7 +14,7 @@ This project is developed and maintained by the [Cortex-M team][team].
 
 Starting with Rust 1.68, this crate can be used as a global allocator:
 
-```
+```rust
 #![no_std]
 #![no_main]
 
