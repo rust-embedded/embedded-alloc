@@ -1,5 +1,6 @@
 [![crates.io](https://img.shields.io/crates/d/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
 [![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
+![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.68+-blue.svg)
 
 # `embedded-alloc`
 
@@ -12,7 +13,7 @@ This project is developed and maintained by the [Cortex-M team][team].
 
 ## Example
 
-Starting with Rust 1.68, this crate can be used as a global allocator:
+Starting with Rust 1.68, this crate can be used as a global allocator on stable Rust:
 
 ```rust
 #![no_std]
