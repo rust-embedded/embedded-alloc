@@ -13,7 +13,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           target: thumbv6m-none-eabi
           override: true
       - uses: actions-rs/cargo@v1
