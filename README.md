@@ -1,6 +1,7 @@
 [![crates.io](https://img.shields.io/crates/d/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
 [![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
-![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.68+-blue.svg)
+![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.68+-blue.svg) -
+ [Documentation](https://docs.rs/embedded-alloc) - [Change log](https://github.com/rust-embedded/embedded-alloc/blob/master/CHANGELOG.md)
 
 # `embedded-alloc`
 
@@ -43,11 +44,7 @@ fn main() -> ! {
 }
 ```
 
-For a full usage example, see `examples/global_alloc.rs`.
-
-## [Documentation](https://docs.rs/embedded-alloc)
-
-## [Change log](CHANGELOG.md)
+For a full usage example, see [`examples/global_alloc.rs`](https://github.com/rust-embedded/embedded-alloc/blob/master/examples/global_alloc.rs).
 
 ## License
 
