@@ -1,9 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
-#![cfg_attr(
-    feature = "allocator_api",
-    feature(allocator_api, nonnull_slice_from_raw_parts, alloc_layout_extra)
-)]
+#![cfg_attr(feature = "allocator_api", feature(allocator_api, alloc_layout_extra))]
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::cell::RefCell;
