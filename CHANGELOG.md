@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Updated `linked_list_allocator` dependency to 0.10.5, which allows
+  compiling with stable rust.
+
 ## [v0.5.0] - 2022-12-06
 
 ### Changed

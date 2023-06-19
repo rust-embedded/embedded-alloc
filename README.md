@@ -1,21 +1,50 @@
 [![crates.io](https://img.shields.io/crates/d/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
 [![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
+![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.68+-blue.svg) -
+ [Documentation](https://docs.rs/embedded-alloc) - [Change log](https://github.com/rust-embedded/embedded-alloc/blob/master/CHANGELOG.md)
 
 # `embedded-alloc`
 
 > A heap allocator for embedded systems.
 
-Note that using this as your global allocator requires nightly Rust.
+Note that using this as your global allocator requires Rust 1.68 or later.
+(With earlier versions, you need the unstable feature `#![feature(default_alloc_error_handler)]`)
 
 This project is developed and maintained by the [Cortex-M team][team].
 
 ## Example
 
-For a usage example, see `examples/global_alloc.rs`.
+Starting with Rust 1.68, this crate can be used as a global allocator on stable Rust:
 
-## [Documentation](https://docs.rs/embedded-alloc)
+```rust
+#![no_std]
+#![no_main]
 
-## [Change log](CHANGELOG.md)
+extern crate alloc;
+
+use cortex_m_rt::entry;
+use embedded_alloc::Heap;
+
+#[global_allocator]
+static HEAP: Heap = Heap::empty();
+
+#[entry]
+fn main() -> ! {
+    // Initialize the allocator BEFORE you use it
+    {
+        use core::mem::MaybeUninit;
+        const HEAP_SIZE: usize = 1024;
+        static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
+        unsafe { HEAP.init(HEAP_MEM.as_ptr() as usize, HEAP_SIZE) }
+    }
+
+    // now the allocator is ready types like Box, Vec can be used.
+
+    loop { /* .. */ }
+}
+```
+
+For a full usage example, see [`examples/global_alloc.rs`](https://github.com/rust-embedded/embedded-alloc/blob/master/examples/global_alloc.rs).
 
 ## License
 
