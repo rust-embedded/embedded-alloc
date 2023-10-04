@@ -25,7 +25,6 @@ version = "0.5.0"
 
 [dependencies]
 critical-section = "1.0"
-spin = "0.9.8"
 
 [dependencies.linked_list_allocator]
 default-features = false
@@ -35,3 +34,4 @@ features = ["const_mut_refs"]
 [dev-dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
+spin = "0.9.8"
