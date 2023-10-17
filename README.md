@@ -46,6 +46,12 @@ fn main() -> ! {
 
 For a full usage example, see [`examples/global_alloc.rs`](https://github.com/rust-embedded/embedded-alloc/blob/master/examples/global_alloc.rs).
 
+For this to work, an implementation of [`critical-section`](https://github.com/rust-embedded/critical-section) must be provided.
+
+For simple use cases you may enable the `critical-section-single-core` feature in the [cortex-m](https://github.com/rust-embedded/cortex-m) crate.
+Please refer to the documentation of [`critical-section`](https://docs.rs/critical-section) for further guidance.
+
+
 ## License
 
 Licensed under either of
