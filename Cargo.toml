@@ -32,7 +32,6 @@ critical-section = "1.0"
 [dependencies.linked_list_allocator]
 default-features = false
 version = "0.10.5"
-features = ["const_mut_refs"]
 
 [dev-dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }

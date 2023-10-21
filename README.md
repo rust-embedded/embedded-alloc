@@ -10,7 +10,7 @@
 Note that using this as your global allocator requires Rust 1.68 or later.
 (With earlier versions, you need the unstable feature `#![feature(default_alloc_error_handler)]`)
 
-This project is developed and maintained by the [Cortex-M team][team].
+This project is developed and maintained by the [libs team][team].
 
 ## Example
 
@@ -71,8 +71,8 @@ dual licensed as above, without any additional terms or conditions.
 ## Code of Conduct
 
 Contribution to this crate is organized under the terms of the [Rust Code of
-Conduct][CoC], the maintainer of this crate, the [Cortex-M team][team], promises
+Conduct][CoC], the maintainer of this crate, the [libs team][team], promises
 to intervene to uphold that code of conduct.
 
 [CoC]: CODE_OF_CONDUCT.md
-[team]: https://github.com/rust-embedded/wg#the-cortex-m-team
+[team]: https://github.com/rust-embedded/wg#the-libs-team
