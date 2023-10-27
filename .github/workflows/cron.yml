@@ -9,18 +9,12 @@ jobs:
   ci-cron:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          target: thumbv6m-none-eabi
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --examples --target thumbv6m-none-eabi
-      - uses: imjohnbo/issue-bot@v2
+          targets: thumbv6m-none-eabi
+      - run: cargo check --examples --target thumbv6m-none-eabi
+      - uses: imjohnbo/issue-bot@v3
         if: failure()
         with:
           title: CI Failure
