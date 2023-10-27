@@ -24,6 +24,7 @@ fn main() -> ! {
     let mut xs = Vec::new();
     xs.push(1);
 
+    #[allow(clippy::empty_loop)]
     loop { /* .. */ }
 }
 
