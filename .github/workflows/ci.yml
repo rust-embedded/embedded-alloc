@@ -1,50 +1,61 @@
 on:
-  push: # Run CI for all branches except GitHub merge queue tmp branches
-    branches-ignore:
-    - "gh-readonly-queue/**"
   pull_request: # Run CI for PRs on any branch
   merge_group: # Run CI for the GitHub merge queue
+  workflow_dispatch: # Run CI when manually requested
 
 name: Continuous integration
 
 jobs:
-  ci-stable:
+  check:
     runs-on: ubuntu-latest
+    env: {"RUSTFLAGS": "-D warnings"}
     strategy:
       matrix:
         target:
           - thumbv6m-none-eabi
           - thumbv7m-none-eabi
+        toolchain:
+          - stable
+          - nightly
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --target=${{ matrix.target }} --examples
-  ci-nightly:
+          targets: ${{ matrix.target }}
+          toolchain: ${{ matrix.toolchain }}
+      - run: cargo check --target=${{ matrix.target }} --examples
+      - if: ${{ matrix.toolchain == 'nightly' }}
+        run: cargo check --target=${{ matrix.target }} --examples --all-features
+
+  clippy:
+    name: Clippy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:
-          - thumbv6m-none-eabi
-          - thumbv7m-none-eabi
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
         with:
-          profile: minimal
+          components: clippy
           toolchain: nightly
-          target: ${{ matrix.target }}
-          override: true
-      - uses: actions-rs/cargo@v1
+          targets: thumbv6m-none-eabi
+      - run: cargo clippy --all-features --examples --target=thumbv6m-none-eabi -- --deny warnings
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
         with:
-          command: check
-          args: --target=${{ matrix.target }} --examples --features allocator_api
+          components: rustfmt
+      - run: cargo fmt -- --check
+
+  rustdoc:
+    name: rustdoc
+    runs-on: ubuntu-latest
+    env: {"RUSTDOCFLAGS": "-D warnings"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: rustdoc
+        run: cargo rustdoc --all-features
