@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
+#![cfg_attr(feature = "allocator_api", feature(allocator_api, alloc_layout_extra))]
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::cell::RefCell;
@@ -86,5 +87,42 @@ unsafe impl GlobalAlloc for Heap {
                 .borrow_mut()
                 .deallocate(NonNull::new_unchecked(ptr), layout)
         });
+    }
+}
+
+#[cfg(feature = "allocator_api")]
+mod allocator_api {
+    use core::{
+        alloc::{AllocError, Allocator, Layout},
+        ptr::NonNull,
+    };
+
+    use crate::Heap;
+
+    unsafe impl Allocator for Heap {
+        fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+            match layout.size() {
+                0 => Ok(NonNull::slice_from_raw_parts(layout.dangling(), 0)),
+                size => critical_section::with(|cs| {
+                    self.heap
+                        .borrow(cs)
+                        .borrow_mut()
+                        .allocate_first_fit(layout)
+                        .map(|allocation| NonNull::slice_from_raw_parts(allocation, size))
+                        .map_err(|_| AllocError)
+                }),
+            }
+        }
+
+        unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
+            if layout.size() != 0 {
+                critical_section::with(|cs| {
+                    self.heap
+                        .borrow(cs)
+                        .borrow_mut()
+                        .deallocate(NonNull::new_unchecked(ptr.as_ptr()), layout)
+                });
+            }
+        }
     }
 }

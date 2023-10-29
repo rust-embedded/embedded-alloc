@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Implemented [`Allocator`] for `Heap` with the `allocator_api` crate feature.
+  This feature requires a nightly toolchain for the unstable [`allocator_api`]
+  compiler feature.
+
+[`Allocator`]: https://doc.rust-lang.org/core/alloc/trait.Allocator.html
+[`allocator_api`]: https://doc.rust-lang.org/beta/unstable-book/library-features/allocator-api.html
+
+### Changed
+
 - Updated `linked_list_allocator` dependency to 0.10.5, which allows
   compiling with stable rust.
 
