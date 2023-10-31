@@ -7,7 +7,7 @@
 //! After toolchain installation this test can be run with:
 //!
 //! ```bash
-//! cargo +nightly run --target thumbv7m-none-eabi --example integration_test --all-features
+//! cargo +nightly run --target thumbv7m-none-eabi --example tlsf_integration_test --all-features
 //! ```
 //!
 //! [Embedded Rust Book]: https://docs.rust-embedded.org/book/intro/index.html
@@ -19,52 +19,69 @@
 extern crate alloc;
 extern crate panic_semihosting;
 
-use alloc::vec::Vec;
-use core::mem::{size_of, MaybeUninit};
+use alloc::collections::LinkedList;
+use core::mem::MaybeUninit;
 use cortex_m_rt::entry;
 use cortex_m_semihosting::{debug, hprintln};
-use embedded_alloc::Heap;
+use embedded_alloc::TlsfHeap as Heap;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
+const HEAP_SIZE: usize = 30 * 1024;
 
 fn test_global_heap() {
-    assert_eq!(HEAP.used(), 0);
+    const ELEMS: usize = 250;
 
-    let mut xs: Vec<i32> = alloc::vec![1];
-    xs.push(2);
-    xs.extend(&[3, 4]);
+    let mut allocated = LinkedList::new();
+    for _ in 0..ELEMS {
+        allocated.push_back(0);
+    }
+    for i in 0..ELEMS {
+        allocated.push_back(i as i32);
+    }
 
-    // do not optimize xs
-    core::hint::black_box(&mut xs);
+    assert_eq!(allocated.len(), 2 * ELEMS);
 
-    assert_eq!(xs.as_slice(), &[1, 2, 3, 4]);
-    assert_eq!(HEAP.used(), size_of::<i32>() * xs.len());
+    for _ in 0..ELEMS {
+        allocated.pop_front();
+    }
+
+    for i in 0..ELEMS {
+        assert_eq!(allocated.pop_front().unwrap(), i as i32);
+    }
 }
 
 fn test_allocator_api() {
     // small local heap
-    const HEAP_SIZE: usize = 16;
+    const HEAP_SIZE: usize = 256;
     let heap_mem: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
     let local_heap: Heap = Heap::empty();
     unsafe { local_heap.init(heap_mem.as_ptr() as usize, HEAP_SIZE) }
 
-    assert_eq!(local_heap.used(), 0);
+    const ELEMS: usize = 2;
 
-    let mut v: Vec<u16, Heap> = Vec::new_in(local_heap);
-    v.push(0xCAFE);
-    v.extend(&[0xDEAD, 0xFEED]);
+    let mut allocated = LinkedList::new_in(local_heap);
+    for _ in 0..ELEMS {
+        allocated.push_back(0);
+    }
+    for i in 0..ELEMS {
+        allocated.push_back(i as i32);
+    }
 
-    // do not optimize v
-    core::hint::black_box(&mut v);
+    assert_eq!(allocated.len(), 2 * ELEMS);
 
-    assert_eq!(v.as_slice(), &[0xCAFE, 0xDEAD, 0xFEED]);
+    for _ in 0..ELEMS {
+        allocated.pop_front();
+    }
+
+    for i in 0..ELEMS {
+        assert_eq!(allocated.pop_front().unwrap(), i as i32);
+    }
 }
 
 #[entry]
 fn main() -> ! {
     {
-        const HEAP_SIZE: usize = 1024;
         static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
         unsafe { HEAP.init(HEAP_MEM.as_ptr() as usize, HEAP_SIZE) }
     }

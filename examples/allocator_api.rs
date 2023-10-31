@@ -8,7 +8,7 @@ use alloc::vec::Vec;
 use core::mem::MaybeUninit;
 use core::panic::PanicInfo;
 use cortex_m_rt::entry;
-use embedded_alloc::Heap;
+use embedded_alloc::LlffHeap as Heap;
 
 // This is not used, but as of 2023-10-29 allocator_api cannot be used without
 // a global heap

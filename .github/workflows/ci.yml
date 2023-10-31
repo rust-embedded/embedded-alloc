@@ -41,7 +41,8 @@ jobs:
           sudo apt update
           sudo apt install qemu-system-arm
       - run: qemu-system-arm --version
-      - run: cargo run --target thumbv7m-none-eabi --example integration_test --all-features
+      - run: cargo run --target thumbv7m-none-eabi --example llff_integration_test --all-features
+      - run: cargo run --target thumbv7m-none-eabi --example tlsf_integration_test --all-features
 
   clippy:
     name: Clippy
