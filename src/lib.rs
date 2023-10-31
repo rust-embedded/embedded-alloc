@@ -75,17 +75,14 @@ mod llff {
         pub fn free(&self) -> usize {
             critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().free())
         }
-    }
 
-    unsafe impl GlobalAlloc for Heap {
-        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        unsafe fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
             critical_section::with(|cs| {
                 self.heap
                     .borrow(cs)
                     .borrow_mut()
                     .allocate_first_fit(layout)
                     .ok()
-                    .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
             })
         }
 
@@ -96,6 +93,17 @@ mod llff {
                     .borrow_mut()
                     .deallocate(NonNull::new_unchecked(ptr), layout)
             });
+        }
+    }
+
+    unsafe impl GlobalAlloc for Heap {
+        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+            self.alloc(layout)
+                .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
+        }
+
+        unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+            self.dealloc(ptr, layout);
         }
     }
 
@@ -192,17 +200,9 @@ mod tlsf {
                     .insert_free_block_ptr(block.into());
             });
         }
-    }
 
-    unsafe impl GlobalAlloc for Heap {
-        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-            critical_section::with(|cs| {
-                self.heap
-                    .borrow(cs)
-                    .borrow_mut()
-                    .allocate(layout)
-                    .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
-            })
+        unsafe fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
+            critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().allocate(layout))
         }
 
         unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
@@ -211,7 +211,18 @@ mod tlsf {
                     .borrow(cs)
                     .borrow_mut()
                     .deallocate(NonNull::new_unchecked(ptr), layout.align())
-            });
+            })
+        }
+    }
+
+    unsafe impl GlobalAlloc for Heap {
+        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+            self.alloc(layout)
+                .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
+        }
+
+        unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+            self.dealloc(ptr, layout)
         }
     }
 

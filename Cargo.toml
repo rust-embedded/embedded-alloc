@@ -24,7 +24,7 @@ name = "embedded-alloc"
 version = "0.5.0"
 
 [features]
-default = ["llff"]
+default = ["llff", "tlsf"]
 allocator_api = []
 
 # Use the Two-Level Segregated Fit allocator
@@ -42,3 +42,5 @@ const-default = { version = "1.0.0", default-features = false, optional = true }
 [dev-dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
+cortex-m-semihosting = "0.5"
+panic-semihosting = { version = "0.6", features = ["exit"] }
