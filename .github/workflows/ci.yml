@@ -28,6 +28,21 @@ jobs:
       - if: ${{ matrix.toolchain == 'nightly' }}
         run: cargo check --target=${{ matrix.target }} --examples --all-features
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          targets: thumbv7m-none-eabi
+          toolchain: nightly
+      - name: Install QEMU
+        run: |
+          sudo apt update
+          sudo apt install qemu-system-arm
+      - run: qemu-system-arm --version
+      - run: cargo run --target thumbv7m-none-eabi --example integration_test --all-features
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
