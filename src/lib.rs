@@ -76,7 +76,7 @@ mod llff {
             critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().free())
         }
 
-        unsafe fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
+        fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
             critical_section::with(|cs| {
                 self.heap
                     .borrow(cs)
@@ -119,25 +119,15 @@ mod llff {
             fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
                 match layout.size() {
                     0 => Ok(NonNull::slice_from_raw_parts(layout.dangling(), 0)),
-                    size => critical_section::with(|cs| {
-                        self.heap
-                            .borrow(cs)
-                            .borrow_mut()
-                            .allocate_first_fit(layout)
-                            .map(|allocation| NonNull::slice_from_raw_parts(allocation, size))
-                            .map_err(|_| AllocError)
+                    size => self.alloc(layout).map_or(Err(AllocError), |allocation| {
+                        Ok(NonNull::slice_from_raw_parts(allocation, size))
                     }),
                 }
             }
 
             unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
                 if layout.size() != 0 {
-                    critical_section::with(|cs| {
-                        self.heap
-                            .borrow(cs)
-                            .borrow_mut()
-                            .deallocate(NonNull::new_unchecked(ptr.as_ptr()), layout)
-                    });
+                    self.dealloc(ptr.as_ptr(), layout);
                 }
             }
         }
@@ -201,7 +191,7 @@ mod tlsf {
             });
         }
 
-        unsafe fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
+        fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
             critical_section::with(|cs| self.heap.borrow(cs).borrow_mut().allocate(layout))
         }
 
@@ -238,26 +228,15 @@ mod tlsf {
             fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
                 match layout.size() {
                     0 => Ok(NonNull::slice_from_raw_parts(layout.dangling(), 0)),
-                    size => critical_section::with(|cs| {
-                        self.heap
-                            .borrow(cs)
-                            .borrow_mut()
-                            .allocate(layout)
-                            .map_or(Err(AllocError), |allocation| {
-                                Ok(NonNull::slice_from_raw_parts(allocation, size))
-                            })
+                    size => self.alloc(layout).map_or(Err(AllocError), |allocation| {
+                        Ok(NonNull::slice_from_raw_parts(allocation, size))
                     }),
                 }
             }
 
             unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
                 if layout.size() != 0 {
-                    critical_section::with(|cs| {
-                        self.heap
-                            .borrow(cs)
-                            .borrow_mut()
-                            .deallocate(NonNull::new_unchecked(ptr.as_ptr()), layout.align())
-                    });
+                    self.dealloc(ptr.as_ptr(), layout);
                 }
             }
         }
