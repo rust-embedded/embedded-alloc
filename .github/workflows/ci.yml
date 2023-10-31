@@ -24,7 +24,7 @@ jobs:
         with:
           targets: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
-      - run: cargo check --target=${{ matrix.target }} --examples
+      - run: cargo check --target=${{ matrix.target }} --example global_alloc
       - if: ${{ matrix.toolchain == 'nightly' }}
         run: cargo check --target=${{ matrix.target }} --examples --all-features
 
