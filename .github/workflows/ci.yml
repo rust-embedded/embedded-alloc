@@ -2,6 +2,9 @@ on:
   pull_request: # Run CI for PRs on any branch
   merge_group: # Run CI for the GitHub merge queue
   workflow_dispatch: # Run CI when manually requested
+  schedule:
+    # Run every week at 8am UTC Saturday
+    - cron: '0 8 * * SAT'
 
 name: Continuous integration
 
@@ -27,6 +30,18 @@ jobs:
       - run: cargo check --target=${{ matrix.target }} --example global_alloc
       - if: ${{ matrix.toolchain == 'nightly' }}
         run: cargo check --target=${{ matrix.target }} --examples --all-features
+      - uses: imjohnbo/issue-bot@v3
+        if: |
+          failure()
+          && github.event_name == 'schedule'
+        with:
+          title: CI Failure
+          labels: ci
+          body: |
+            Scheduled CI run failed. Details:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
