@@ -23,7 +23,7 @@ mod llff {
     }
 
     impl Heap {
-        /// Crate a new UNINITIALIZED heap allocator
+        /// Create a new UNINITIALIZED heap allocator
         ///
         /// You must initialize this heap using the
         /// [`init`](Self::init) method before using the allocator.
@@ -147,7 +147,7 @@ mod tlsf {
     }
 
     impl Heap {
-        /// Crate a new UNINITIALIZED heap allocator
+        /// Create a new UNINITIALIZED heap allocator
         ///
         /// You must initialize this heap using the
         /// [`init`](Self::init) method before using the allocator.
