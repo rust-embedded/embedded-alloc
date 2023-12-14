@@ -10,7 +10,7 @@ description = "A heap allocator for embedded systems"
 repository = "https://github.com/rust-embedded/embedded-alloc"
 documentation = "https://docs.rs/embedded-alloc"
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 
 keywords = [
     "allocator",
