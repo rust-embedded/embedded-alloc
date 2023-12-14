@@ -48,9 +48,17 @@ For a full usage example, see [`examples/global_alloc.rs`](https://github.com/ru
 
 For this to work, an implementation of [`critical-section`](https://github.com/rust-embedded/critical-section) must be provided.
 
-For simple use cases you may enable the `critical-section-single-core` feature in the [cortex-m](https://github.com/rust-embedded/cortex-m) crate.
+For simple use cases with Cortex-M CPUs you may enable the `critical-section-single-core` feature in the [cortex-m](https://github.com/rust-embedded/cortex-m) crate.
 Please refer to the documentation of [`critical-section`](https://docs.rs/critical-section) for further guidance.
 
+## Features
+
+There are two heaps available to use:
+
+* `llff`: Provides `LlffHeap`, a Linked List First Fit heap.
+* `tlsf`: Provides `TlsfHeap`, a Two-Level Segregated Fit heap.
+
+The best heap to use will depend on your application, see [#78](https://github.com/rust-embedded/embedded-alloc/pull/78) for more discussion.
 
 ## License
 
