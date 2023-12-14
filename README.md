@@ -23,7 +23,7 @@ Starting with Rust 1.68, this crate can be used as a global allocator on stable 
 extern crate alloc;
 
 use cortex_m_rt::entry;
-use embedded_alloc::Heap;
+use embedded_alloc::LlffHeap as Heap;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();

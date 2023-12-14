@@ -24,14 +24,20 @@ name = "embedded-alloc"
 version = "0.5.1"
 
 [features]
+default = ["llff", "tlsf"]
 allocator_api = []
+
+# Use the Two-Level Segregated Fit allocator
+tlsf = ["rlsf", "const-default"]
+ # Use the LinkedList first-fit allocator
+llff = ["linked_list_allocator"]
 
 [dependencies]
 critical-section = "1.0"
+linked_list_allocator = { version = "0.10.5", default-features = false, optional = true }
+rlsf = { version = "0.2.1", default-features = false, optional = true }
+const-default = { version = "1.0.0", default-features = false, optional = true }
 
-[dependencies.linked_list_allocator]
-default-features = false
-version = "0.10.5"
 
 [dev-dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
