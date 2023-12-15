@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - The `Heap` struct has been renamed to `LlffHeap` and requires the `llff` feature.
+- Updated the rust edition from 2018 to 2021.
 
 ## [v0.5.1] - 2023-11-04
 
