@@ -98,10 +98,7 @@ unsafe impl GlobalAlloc for Heap {
 #[cfg(feature = "allocator_api")]
 mod allocator_api {
     use super::*;
-    use core::{
-        alloc::{AllocError, Allocator, Layout},
-        ptr::NonNull,
-    };
+    use core::alloc::{AllocError, Allocator};
 
     unsafe impl Allocator for Heap {
         fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
