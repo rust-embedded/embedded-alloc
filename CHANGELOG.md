@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [v0.6.0] - 2024-09-01
 
 ### Added
 
@@ -131,7 +131,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial version of the allocator
 
-[Unreleased]: https://github.com/rust-embedded/embedded-alloc/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/rust-embedded/embedded-alloc/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.5.1...v0.6.0
 [v0.5.1]: https://github.com/rust-embedded/embedded-alloc/compare/v0.5.0...v0.5.1
 [v0.5.0]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.3...v0.5.0
 [v0.4.3]: https://github.com/rust-embedded/embedded-alloc/compare/v0.4.2...v0.4.3
