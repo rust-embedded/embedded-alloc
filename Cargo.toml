@@ -43,3 +43,19 @@ cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
 cortex-m-semihosting = "0.5"
 panic-semihosting = { version = "0.6", features = ["exit"] }
+
+[[example]]
+name = "allocator_api"
+required-features = ["allocator_api", "llff"]
+
+[[example]]
+name = "llff_integration_test"
+required-features = ["allocator_api", "llff"]
+
+[[example]]
+name = "tlsf_integration_test"
+required-features = ["allocator_api", "tlsf"]
+
+[[example]]
+name = "global_alloc"
+required-features = ["llff"]
