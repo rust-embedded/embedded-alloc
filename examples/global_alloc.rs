@@ -5,6 +5,7 @@ extern crate alloc;
 
 use alloc::vec::Vec;
 use core::panic::PanicInfo;
+use core::ptr::addr_of_mut;
 use cortex_m_rt::entry;
 // Linked-List First Fit Heap allocator (feature = "llff")
 use embedded_alloc::LlffHeap as Heap;
@@ -21,7 +22,7 @@ fn main() -> ! {
         use core::mem::MaybeUninit;
         const HEAP_SIZE: usize = 1024;
         static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-        unsafe { HEAP.init(HEAP_MEM.as_ptr() as usize, HEAP_SIZE) }
+        unsafe { HEAP.init(addr_of_mut!(HEAP_MEM) as usize, HEAP_SIZE) }
     }
 
     let mut xs = Vec::new();
