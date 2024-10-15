@@ -1,4 +1,10 @@
-[target.thumbv7m-none-eabi]
 # used to run the qemu_test.rs example with QEMU
 runner = "qemu-system-arm -cpu cortex-m3 -machine lm3s6965evb -nographic -semihosting-config enable=on,target=native -kernel"
 rustflags = ["-C", "link-arg=-Tlink.x"]
+targets = [
+    "thumbv7em-none-eabi",
+    "thumbv7m-none-eabi",
+    "thumbv6m-none-eabi",
+    "thumbv7em-none-eabihf",
+    "thumbv8m.main-none-eabihf",
+]
