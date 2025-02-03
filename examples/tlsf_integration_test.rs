@@ -21,7 +21,6 @@ extern crate panic_semihosting;
 
 use alloc::collections::LinkedList;
 use core::mem::MaybeUninit;
-use core::ptr::addr_of_mut;
 use cortex_m_rt::entry;
 use cortex_m_semihosting::{debug, hprintln};
 use embedded_alloc::TlsfHeap as Heap;
@@ -55,9 +54,9 @@ fn test_global_heap() {
 fn test_allocator_api() {
     // small local heap
     const HEAP_SIZE: usize = 256;
-    let heap_mem: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
+    let mut heap_mem: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
     let local_heap: Heap = Heap::empty();
-    unsafe { local_heap.init(heap_mem.as_ptr() as usize, HEAP_SIZE) }
+    unsafe { local_heap.init(heap_mem.as_mut_ptr() as usize, HEAP_SIZE) }
 
     const ELEMS: usize = 2;
 
@@ -84,7 +83,7 @@ fn test_allocator_api() {
 fn main() -> ! {
     {
         static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-        unsafe { HEAP.init(addr_of_mut!(HEAP_MEM) as usize, HEAP_SIZE) }
+        unsafe { HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE) }
     }
 
     #[allow(clippy::type_complexity)]
