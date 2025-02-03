@@ -56,7 +56,7 @@ fn test_allocator_api() {
     const HEAP_SIZE: usize = 256;
     let mut heap_mem: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
     let local_heap: Heap = Heap::empty();
-    unsafe { local_heap.init(&raw mut heap_mem as usize, HEAP_SIZE) }
+    unsafe { local_heap.init(heap_mem.as_mut_ptr() as usize, HEAP_SIZE) }
 
     const ELEMS: usize = 2;
 
