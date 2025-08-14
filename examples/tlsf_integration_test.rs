@@ -81,9 +81,8 @@ fn test_allocator_api() {
 
 #[entry]
 fn main() -> ! {
-    {
-        static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-        unsafe { HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE) }
+    unsafe {
+        embedded_alloc::init!(HEAP, HEAP_SIZE);
     }
 
     #[allow(clippy::type_complexity)]
