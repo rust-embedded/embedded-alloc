@@ -5,10 +5,14 @@
 
 #[cfg(feature = "llff")]
 mod llff;
+#[cfg(feature = "simplest")]
+mod simplest;
 #[cfg(feature = "tlsf")]
 mod tlsf;
 
 #[cfg(feature = "llff")]
 pub use llff::Heap as LlffHeap;
+#[cfg(feature = "simplest")]
+pub use simplest::Heap as SimplestHeap;
 #[cfg(feature = "tlsf")]
 pub use tlsf::Heap as TlsfHeap;

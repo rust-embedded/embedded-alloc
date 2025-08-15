@@ -24,13 +24,15 @@ name = "embedded-alloc"
 version = "0.6.0"
 
 [features]
-default = ["llff", "tlsf"]
+default = ["llff", "tlsf", "simplest"]
 allocator_api = []
 
 # Use the Two-Level Segregated Fit allocator
 tlsf = ["rlsf", "const-default"]
- # Use the LinkedList first-fit allocator
+# Use the LinkedList first-fit allocator
 llff = ["linked_list_allocator"]
+# Use the simplest allocator
+simplest = []
 
 [dependencies]
 critical-section = "1.0"
@@ -55,6 +57,10 @@ required-features = ["allocator_api", "llff"]
 [[example]]
 name = "tlsf_integration_test"
 required-features = ["allocator_api", "tlsf"]
+
+[[example]]
+name = "simplest_integration_test"
+required-features = ["allocator_api", "simplest"]
 
 [[example]]
 name = "global_alloc"
