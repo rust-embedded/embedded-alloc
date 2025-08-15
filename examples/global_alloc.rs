@@ -10,6 +10,7 @@ use cortex_m_rt::entry;
 use embedded_alloc::LlffHeap as Heap;
 // Two-Level Segregated Fit Heap allocator (feature = "tlsf")
 // use embedded_alloc::TlsfHeap as Heap;
+// use embedded_alloc::SimplestHeap as Heap;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
