@@ -30,6 +30,13 @@ pub use tlsf::Heap as TlsfHeap;
 /// It internally calls `Heap::init(...)` on the heap,
 /// so `Heap::init(...)` should not be called directly if this macro is used.
 ///
+/// # Panics
+///
+/// This macro will panic if either of the following are true:
+///
+/// - this function is called more than ONCE.
+/// - `size == 0`.
+///
 /// # Example
 ///
 /// ```rust

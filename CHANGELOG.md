@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added a `init` macro to make initialization easier.
 
+### Changed
+
+- The `init` function will panic if it's called more than once or with `size == 0`.
+
 ## [v0.6.0] - 2024-09-01
 
 ### Added
