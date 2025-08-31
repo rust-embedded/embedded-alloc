@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Added a `init` macro to make initialization easier.
+
+### Changed
+
+- The `Heap::init` methods now panic if they're called more than once or with `size == 0`.
+
 ## [v0.6.0] - 2024-09-01
 
 ### Added

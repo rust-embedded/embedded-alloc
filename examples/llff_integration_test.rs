@@ -63,10 +63,8 @@ fn test_allocator_api() {
 
 #[entry]
 fn main() -> ! {
-    {
-        const HEAP_SIZE: usize = 1024;
-        static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-        unsafe { HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE) }
+    unsafe {
+        embedded_alloc::init!(HEAP, 1024);
     }
 
     #[allow(clippy::type_complexity)]

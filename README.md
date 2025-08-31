@@ -31,6 +31,10 @@ static HEAP: Heap = Heap::empty();
 #[entry]
 fn main() -> ! {
     // Initialize the allocator BEFORE you use it
+    unsafe {
+        embedded_alloc::init!(HEAP, 1024);
+    }
+    // Alternatively, you can write the code directly to meet specific requirements.
     {
         use core::mem::MaybeUninit;
         const HEAP_SIZE: usize = 1024;
