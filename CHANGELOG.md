@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- The `init` function will panic if it's called more than once or with `size == 0`.
+- The `Heap::init` methods now panic if they're called more than once or with `size == 0`.
 
 ## [v0.6.0] - 2024-09-01
 
