@@ -1,4 +1,25 @@
-[target.thumbv7m-none-eabi]
+[build]
+# Common embedded build targets
+target = "thumbv7em-none-eabihf"
+# target = "thumbv6m-none-eabi"
+
+[target.thumbv7em-none-eabihf]
 # used to run the qemu_test.rs example with QEMU
-runner = "qemu-system-arm -cpu cortex-m3 -machine lm3s6965evb -nographic -semihosting-config enable=on,target=native -kernel"
-rustflags = ["-C", "link-arg=-Tlink.x"]
+runner = "./qemu-runner.sh --target thumbv7em-none-eabihf"
+rustflags = [
+  "-Clink-arg=-Tlink.x",
+  "-Clink-arg=-Tdefmt.x",
+  # Can be useful for debugging and to inspect where the heap memory is placed/linked.
+  # "-Clink-args=-Map=app.map"
+]
+
+[target.thumbv6m-none-eabi]
+# used to run the qemu_test.rs example with QEMU
+runner = "./qemu-runner.sh --target thumbv6m-none-eabi"
+rustflags = [
+  "-Clink-arg=-Tlink.x",
+  "-Clink-arg=-Tdefmt.x",
+]
+
+[env]
+DEFMT_LOG="info"
