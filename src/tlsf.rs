@@ -61,8 +61,9 @@ impl Heap {
             let mut heap = self.heap.borrow_ref_mut(cs);
             assert!(!heap.1);
             heap.1 = true;
-            let block: &[u8] = core::slice::from_raw_parts(start_addr as *const u8, size);
-            heap.0.insert_free_block_ptr(block.into());
+            let block: NonNull<[u8]> =
+                NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
+            heap.0.insert_free_block_ptr(block);
         });
     }
 
