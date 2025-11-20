@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Added a `init` macro to make initialization easier.
+- Added `Heap::free` and `Heap::used` for the TLSF heap.
 
 ### Changed
 

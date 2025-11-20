@@ -37,5 +37,5 @@ fn main() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     defmt::error!("{}", info);
-    semihosting::process::exit(0);
+    semihosting::process::exit(-1);
 }
