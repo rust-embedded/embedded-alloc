@@ -3,9 +3,11 @@
 
 extern crate alloc;
 
-use alloc::vec::Vec;
-use core::panic::PanicInfo;
+use cortex_m as _;
 use cortex_m_rt::entry;
+use defmt_semihosting as _;
+
+use core::panic::PanicInfo;
 // Linked-List First Fit Heap allocator (feature = "llff")
 use embedded_alloc::LlffHeap as Heap;
 // Two-Level Segregated Fit Heap allocator (feature = "tlsf")
@@ -21,14 +23,19 @@ fn main() -> ! {
         embedded_alloc::init!(HEAP, 1024);
     }
 
-    let mut xs = Vec::new();
-    xs.push(1);
+    let vec = alloc::vec![1];
 
-    #[allow(clippy::empty_loop)]
-    loop { /* .. */ }
+    defmt::info!("Allocated vector: {:?}", vec.as_slice());
+
+    let string = alloc::string::String::from("Hello, world!");
+
+    defmt::info!("Allocated string: {:?}", string.as_str());
+
+    semihosting::process::exit(0);
 }
 
 #[panic_handler]
-fn panic(_: &PanicInfo) -> ! {
-    loop {}
+fn panic(info: &PanicInfo) -> ! {
+    defmt::error!("{}", info);
+    semihosting::process::exit(0);
 }

@@ -17,17 +17,19 @@
 #![no_std]
 
 extern crate alloc;
-extern crate panic_semihosting;
+use defmt_semihosting as _;
 
 use alloc::collections::LinkedList;
-use core::mem::MaybeUninit;
+use core::{mem::MaybeUninit, panic::PanicInfo};
+use cortex_m as _;
 use cortex_m_rt::entry;
-use cortex_m_semihosting::{debug, hprintln};
 use embedded_alloc::TlsfHeap as Heap;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
 const HEAP_SIZE: usize = 30 * 1024;
+
+pub type TestTable<'a> = &'a [(fn() -> (), &'static str)];
 
 fn test_global_heap() {
     const ELEMS: usize = 250;
@@ -85,20 +87,23 @@ fn main() -> ! {
         embedded_alloc::init!(HEAP, HEAP_SIZE);
     }
 
-    #[allow(clippy::type_complexity)]
-    let tests: &[(fn() -> (), &'static str)] = &[
+    let tests: TestTable = &[
         (test_global_heap, "test_global_heap"),
         (test_allocator_api, "test_allocator_api"),
     ];
 
     for (test_fn, test_name) in tests {
-        hprintln!("{}: start", test_name);
+        defmt::info!("{}: start", test_name);
         test_fn();
-        hprintln!("{}: pass", test_name);
+        defmt::info!("{}: pass", test_name);
     }
 
     // exit QEMU with a success status
-    debug::exit(debug::EXIT_SUCCESS);
-    #[allow(clippy::empty_loop)]
-    loop {}
+    semihosting::process::exit(0);
+}
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    defmt::error!("{}", info);
+    semihosting::process::exit(-1);
 }

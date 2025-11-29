@@ -41,8 +41,17 @@ const-default = { version = "1.0.0", default-features = false, optional = true }
 [dev-dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
-cortex-m-semihosting = "0.5"
-panic-semihosting = { version = "0.6", features = ["exit"] }
+defmt = "1.0"
+defmt-semihosting = "0.3.0"
+semihosting = { version = "0.1.20", features = ["stdio"] }
+
+# thumbv6m-none-eabi only
+[target.thumbv6m-none-eabi.dev-dependencies]
+portable-atomic = { version = "1", features = ["unsafe-assume-single-core"] }
+
+# every other target gets the crate without the feature
+[target.'cfg(not(target = "thumbv6m-none-eabi"))'.dev-dependencies]
+portable-atomic = { version = "1" }
 
 [[example]]
 name = "allocator_api"

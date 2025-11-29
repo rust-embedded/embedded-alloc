@@ -16,7 +16,7 @@ jobs:
       matrix:
         target:
           - thumbv6m-none-eabi
-          - thumbv7m-none-eabi
+          - thumbv7em-none-eabihf
         toolchain:
           - stable
           - nightly
@@ -49,15 +49,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          targets: thumbv7m-none-eabi
+          targets: thumbv7em-none-eabihf
           toolchain: nightly
       - name: Install QEMU
         run: |
           sudo apt update
           sudo apt install qemu-system-arm
       - run: qemu-system-arm --version
-      - run: cargo run --target thumbv7m-none-eabi --example llff_integration_test --all-features
-      - run: cargo run --target thumbv7m-none-eabi --example tlsf_integration_test --all-features
+      - run: cargo +nightly run --target thumbv7em-none-eabihf --example llff_integration_test --all-features
+      - run: cargo +nightly run --target thumbv7em-none-eabihf --example tlsf_integration_test --all-features
 
   clippy:
     name: Clippy
@@ -88,5 +88,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: thumbv7em-none-eabihf
+          toolchain: nightly
       - name: rustdoc
-        run: cargo rustdoc --all-features
+        run: cargo +nightly rustdoc --all-features

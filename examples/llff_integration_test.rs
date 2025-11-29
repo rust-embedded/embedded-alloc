@@ -17,12 +17,15 @@
 #![no_std]
 
 extern crate alloc;
-extern crate panic_semihosting;
 
 use alloc::vec::Vec;
-use core::mem::{size_of, MaybeUninit};
+use core::{
+    mem::{size_of, MaybeUninit},
+    panic::PanicInfo,
+};
+use cortex_m as _;
 use cortex_m_rt::entry;
-use cortex_m_semihosting::{debug, hprintln};
+use defmt_semihosting as _;
 use embedded_alloc::LlffHeap as Heap;
 
 #[global_allocator]
@@ -61,26 +64,31 @@ fn test_allocator_api() {
     assert_eq!(v.as_slice(), &[0xCAFE, 0xDEAD, 0xFEED]);
 }
 
+pub type TestTable<'a> = &'a [(fn() -> (), &'static str)];
+
 #[entry]
 fn main() -> ! {
     unsafe {
         embedded_alloc::init!(HEAP, 1024);
     }
 
-    #[allow(clippy::type_complexity)]
-    let tests: &[(fn() -> (), &'static str)] = &[
+    let tests: TestTable = &[
         (test_global_heap, "test_global_heap"),
         (test_allocator_api, "test_allocator_api"),
     ];
 
     for (test_fn, test_name) in tests {
-        hprintln!("{}: start", test_name);
+        defmt::info!("{}: start", test_name);
         test_fn();
-        hprintln!("{}: pass", test_name);
+        defmt::info!("{}: pass", test_name);
     }
 
     // exit QEMU with a success status
-    debug::exit(debug::EXIT_SUCCESS);
-    #[allow(clippy::empty_loop)]
-    loop {}
+    semihosting::process::exit(0);
+}
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    defmt::error!("{}", info);
+    semihosting::process::exit(-1);
 }
