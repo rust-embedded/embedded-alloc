@@ -8,9 +8,20 @@ use rlsf::Tlsf;
 
 type TlsfHeap = Tlsf<'static, usize, usize, { usize::BITS as usize }, { usize::BITS as usize }>;
 
+struct Inner {
+    tlsf: TlsfHeap,
+    initialized: bool,
+    raw_block: Option<NonNull<[u8]>>,
+    raw_block_size: usize,
+}
+
+// Safety: The whole inner type is wrapped by a [Mutex].
+unsafe impl Sync for Inner {}
+unsafe impl Send for Inner {}
+
 /// A two-Level segregated fit heap.
 pub struct Heap {
-    heap: Mutex<RefCell<(TlsfHeap, bool)>>,
+    heap: Mutex<RefCell<Inner>>,
 }
 
 impl Heap {
@@ -20,7 +31,12 @@ impl Heap {
     /// [`init`](Self::init) method before using the allocator.
     pub const fn empty() -> Heap {
         Heap {
-            heap: Mutex::new(RefCell::new((ConstDefault::DEFAULT, false))),
+            heap: Mutex::new(RefCell::new(Inner {
+                tlsf: ConstDefault::DEFAULT,
+                initialized: false,
+                raw_block: None,
+                raw_block_size: 0,
+            })),
         }
     }
 
@@ -59,25 +75,56 @@ impl Heap {
         assert!(size > 0);
         critical_section::with(|cs| {
             let mut heap = self.heap.borrow_ref_mut(cs);
-            assert!(!heap.1);
-            heap.1 = true;
+            assert!(!heap.initialized);
+            heap.initialized = true;
             let block: NonNull<[u8]> =
                 NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
-            heap.0.insert_free_block_ptr(block);
+            heap.tlsf.insert_free_block_ptr(block);
+            heap.raw_block = Some(block);
+            heap.raw_block_size = size;
         });
     }
 
     fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
-        critical_section::with(|cs| self.heap.borrow_ref_mut(cs).0.allocate(layout))
+        critical_section::with(|cs| self.heap.borrow_ref_mut(cs).tlsf.allocate(layout))
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
         critical_section::with(|cs| {
             self.heap
                 .borrow_ref_mut(cs)
-                .0
+                .tlsf
                 .deallocate(NonNull::new_unchecked(ptr), layout.align())
         })
+    }
+
+    /// Get the amount of bytes used by the allocator.
+    pub fn used(&self) -> usize {
+        critical_section::with(|cs| {
+            self.heap.borrow_ref_mut(cs).raw_block_size - self.free_with_cs(cs)
+        })
+    }
+
+    /// Get the amount of free bytes in the allocator.
+    pub fn free(&self) -> usize {
+        critical_section::with(|cs| self.free_with_cs(cs))
+    }
+
+    fn free_with_cs(&self, cs: critical_section::CriticalSection) -> usize {
+        let inner_mut = self.heap.borrow_ref_mut(cs);
+        if !inner_mut.initialized {
+            return 0;
+        }
+        // Safety: We pass the memory block we previously initialized the heap with
+        // to the `iter_blocks` method.
+        unsafe {
+            inner_mut
+                .tlsf
+                .iter_blocks(inner_mut.raw_block.unwrap())
+                .filter(|block_info| !block_info.is_occupied())
+                .map(|block_info| block_info.max_payload_size())
+                .sum::<usize>()
+        }
     }
 }
 
