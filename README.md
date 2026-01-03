@@ -1,20 +1,14 @@
 [![crates.io](https://img.shields.io/crates/d/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
-[![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc)
-![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.68+-blue.svg) -
+[![crates.io](https://img.shields.io/crates/v/embedded-alloc.svg)](https://crates.io/crates/embedded-alloc) -
  [Documentation](https://docs.rs/embedded-alloc) - [Change log](https://github.com/rust-embedded/embedded-alloc/blob/master/CHANGELOG.md)
 
 # `embedded-alloc`
 
 > A heap allocator for embedded systems.
 
-Note that using this as your global allocator requires Rust 1.68 or later.
-(With earlier versions, you need the unstable feature `#![feature(default_alloc_error_handler)]`)
-
 This project is developed and maintained by the [libs team][team].
 
 ## Example
-
-Starting with Rust 1.68, this crate can be used as a global allocator on stable Rust:
 
 ```rust
 #![no_std]
