@@ -111,7 +111,7 @@ mod allocator_api {
     unsafe impl Allocator for Heap {
         fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
             match layout.size() {
-                0 => Ok(NonNull::slice_from_raw_parts(layout.dangling(), 0)),
+                0 => Ok(NonNull::slice_from_raw_parts(layout.dangling_ptr(), 0)),
                 size => self.alloc(layout).map_or(Err(AllocError), |allocation| {
                     Ok(NonNull::slice_from_raw_parts(allocation, size))
                 }),
