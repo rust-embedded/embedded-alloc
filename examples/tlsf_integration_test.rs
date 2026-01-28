@@ -33,6 +33,8 @@ pub type TestTable<'a> = &'a [(fn() -> (), &'static str)];
 
 fn test_global_heap() {
     const ELEMS: usize = 250;
+    assert_eq!(HEAP_SIZE, HEAP.free() + HEAP.used());
+    let initial_free = HEAP.free();
 
     let mut allocated = LinkedList::new();
     for _ in 0..ELEMS {
@@ -51,6 +53,8 @@ fn test_global_heap() {
     for i in 0..ELEMS {
         assert_eq!(allocated.pop_front().unwrap(), i as i32);
     }
+    assert_eq!(HEAP_SIZE, HEAP.free() + HEAP.used());
+    assert_eq!(initial_free, HEAP.free());
 }
 
 fn test_allocator_api() {

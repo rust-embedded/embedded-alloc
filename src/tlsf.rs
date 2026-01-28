@@ -101,7 +101,8 @@ impl Heap {
     /// Get the amount of bytes used by the allocator.
     pub fn used(&self) -> usize {
         critical_section::with(|cs| {
-            self.heap.borrow_ref_mut(cs).raw_block_size - self.free_with_cs(cs)
+            let free = self.free_with_cs(cs);
+            self.heap.borrow_ref_mut(cs).raw_block_size - free
         })
     }
 
