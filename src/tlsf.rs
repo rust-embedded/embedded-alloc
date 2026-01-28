@@ -70,19 +70,41 @@ impl Heap {
     /// This function will panic if either of the following are true:
     ///
     /// - this function is called more than ONCE.
-    /// - `size == 0`.
+    /// - `size`, after aligning start and end to `rlsf::GRANULARITY`, is smaller than `rlsf::GRANULARITY * 2`.
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
         assert!(size > 0);
         critical_section::with(|cs| {
             let mut heap = self.heap.borrow_ref_mut(cs);
             assert!(!heap.initialized);
-            heap.initialized = true;
-            let block: NonNull<[u8]> =
-                NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
-            heap.tlsf.insert_free_block_ptr(block);
-            heap.raw_block = Some(block);
-            heap.raw_block_size = size;
+            // Work around https://github.com/yvt/rlsf/pull/21 by aligning block before passing
+            // it to `Tlsf::insert_free_block_ptr`.
+            if let Some((aligned_start_addr, usable_size)) = Self::align(start_addr, size) {
+                let block: NonNull<[u8]> = NonNull::slice_from_raw_parts(
+                    NonNull::new_unchecked(aligned_start_addr as *mut u8),
+                    usable_size,
+                );
+                if heap.tlsf.insert_free_block_ptr(block).is_some() {
+                    heap.initialized = true;
+                    heap.raw_block = Some(block);
+                    heap.raw_block_size = size;
+                }
+            }
+            if !heap.initialized {
+                panic!("Allocation too small for heap");
+            }
         });
+    }
+
+    /// Align `start_addr` to `rlsf::GRANULARITY` and make
+    /// `size` a multiple of `2*rlsf::GRANULARITY`.
+    fn align(start_addr: usize, size: usize) -> Option<(usize, usize)> {
+        let align_offset: usize = (start_addr as *const u8).align_offset(rlsf::GRANULARITY);
+        if align_offset >= size {
+            return None;
+        }
+        let reduced_size: usize = size - align_offset;
+        let usable_size: usize = reduced_size - (reduced_size % (rlsf::GRANULARITY * 2));
+        Some((start_addr + align_offset, usable_size))
     }
 
     fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
