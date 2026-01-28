@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Fix panic in `tlsf::Heap::used`.
+- Work around https://github.com/yvt/rlsf/pull/21 by aligning block before passing it
+  to `Tlsf::insert_free_block_ptr`.
 
 ## [v0.7.0] - 2026-01-03
 
