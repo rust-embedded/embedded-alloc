@@ -76,35 +76,21 @@ impl Heap {
         critical_section::with(|cs| {
             let mut heap = self.heap.borrow_ref_mut(cs);
             assert!(!heap.initialized);
-            // Work around https://github.com/yvt/rlsf/pull/21 by aligning block before passing
-            // it to `Tlsf::insert_free_block_ptr`.
-            if let Some((aligned_start_addr, usable_size)) = Self::align(start_addr, size) {
+            let block: NonNull<[u8]> =
+                NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
+            if let Some(actual_size) = heap.tlsf.insert_free_block_ptr(block) {
                 let block: NonNull<[u8]> = NonNull::slice_from_raw_parts(
-                    NonNull::new_unchecked(aligned_start_addr as *mut u8),
-                    usable_size,
+                    NonNull::new_unchecked(start_addr as *mut u8),
+                    actual_size.get(),
                 );
-                if heap.tlsf.insert_free_block_ptr(block).is_some() {
-                    heap.initialized = true;
-                    heap.raw_block = Some(block);
-                    heap.raw_block_size = size;
-                }
+                heap.initialized = true;
+                heap.raw_block = Some(block);
+                heap.raw_block_size = size;
             }
             if !heap.initialized {
                 panic!("Allocation too small for heap");
             }
         });
-    }
-
-    /// Align `start_addr` to `rlsf::GRANULARITY` and make
-    /// `size` a multiple of `2*rlsf::GRANULARITY`.
-    fn align(start_addr: usize, size: usize) -> Option<(usize, usize)> {
-        let align_offset: usize = (start_addr as *const u8).align_offset(rlsf::GRANULARITY);
-        if align_offset >= size {
-            return None;
-        }
-        let reduced_size: usize = size - align_offset;
-        let usable_size: usize = reduced_size - (reduced_size % (rlsf::GRANULARITY * 2));
-        Some((start_addr + align_offset, usable_size))
     }
 
     fn alloc(&self, layout: Layout) -> Option<NonNull<u8>> {
