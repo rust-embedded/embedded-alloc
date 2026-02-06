@@ -78,18 +78,16 @@ impl Heap {
             assert!(!heap.initialized);
             let block: NonNull<[u8]> =
                 NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
-            if let Some(actual_size) = heap.tlsf.insert_free_block_ptr(block) {
-                let block: NonNull<[u8]> = NonNull::slice_from_raw_parts(
-                    NonNull::new_unchecked(start_addr as *mut u8),
-                    actual_size.get(),
-                );
-                heap.initialized = true;
-                heap.raw_block = Some(block);
-                heap.raw_block_size = size;
-            }
-            if !heap.initialized {
+            let Some(actual_size) = heap.tlsf.insert_free_block_ptr(block) else {
                 panic!("Allocation too small for heap");
-            }
+            };
+            let block: NonNull<[u8]> = NonNull::slice_from_raw_parts(
+                NonNull::new_unchecked(start_addr as *mut u8),
+                actual_size.get(),
+            );
+            heap.initialized = true;
+            heap.raw_block = Some(block);
+            heap.raw_block_size = size;
         });
     }
 
