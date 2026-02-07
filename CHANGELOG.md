@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Fix panic in `tlsf::Heap::used`.
+- Fix panic in `tlsf::Heap::free` in case the value returned from `insert_free_block_ptr`
+  does not cover the full memory range passed in.
 
 ## [v0.7.0] - 2026-01-03
 

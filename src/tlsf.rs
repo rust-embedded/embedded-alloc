@@ -70,16 +70,22 @@ impl Heap {
     /// This function will panic if either of the following are true:
     ///
     /// - this function is called more than ONCE.
-    /// - `size == 0`.
+    /// - `size`, after aligning start and end to `rlsf::GRANULARITY`, is smaller than `rlsf::GRANULARITY * 2`.
     pub unsafe fn init(&self, start_addr: usize, size: usize) {
         assert!(size > 0);
         critical_section::with(|cs| {
             let mut heap = self.heap.borrow_ref_mut(cs);
             assert!(!heap.initialized);
-            heap.initialized = true;
             let block: NonNull<[u8]> =
                 NonNull::slice_from_raw_parts(NonNull::new_unchecked(start_addr as *mut u8), size);
-            heap.tlsf.insert_free_block_ptr(block);
+            let Some(actual_size) = heap.tlsf.insert_free_block_ptr(block) else {
+                panic!("Allocation too small for heap");
+            };
+            let block: NonNull<[u8]> = NonNull::slice_from_raw_parts(
+                NonNull::new_unchecked(start_addr as *mut u8),
+                actual_size.get(),
+            );
+            heap.initialized = true;
             heap.raw_block = Some(block);
             heap.raw_block_size = size;
         });
