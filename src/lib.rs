@@ -1,6 +1,5 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
-#![cfg_attr(feature = "allocator_api", feature(allocator_ext))]
 #![warn(missing_docs)]
 
 #[cfg(feature = "llff")]

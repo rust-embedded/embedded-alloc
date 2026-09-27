@@ -1,5 +1,4 @@
 //! This examples requires nightly for the allocator API.
-#![feature(allocator_ext)]
 #![no_std]
 #![no_main]
 
