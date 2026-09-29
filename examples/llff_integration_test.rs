@@ -12,7 +12,6 @@
 //!
 //! [Embedded Rust Book]: https://docs.rust-embedded.org/book/intro/index.html
 
-#![feature(allocator_api)]
 #![no_main]
 #![no_std]
 

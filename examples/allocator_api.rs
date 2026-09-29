@@ -1,5 +1,4 @@
 //! This examples requires nightly for the allocator API.
-#![feature(allocator_api)]
 #![no_std]
 #![no_main]
 
@@ -11,7 +10,7 @@ use cortex_m_rt::entry;
 use defmt_semihosting as _;
 use embedded_alloc::LlffHeap as Heap;
 
-// This is not used, but as of 2023-10-29 allocator_api cannot be used without
+// This is not used, but as of 2026-09-27 `alloc` collections cannot be used without it, even when using only a local allocator.
 // a global heap
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
